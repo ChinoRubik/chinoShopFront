@@ -17,7 +17,6 @@ export default new Vuex.Store({
   },
   actions: {
     login({commit}, user) {
-
       axios.post(config.api_route+'auth/login',
         user , {
           headers: {'Content-Type': 'application/json'}
@@ -26,8 +25,40 @@ export default new Vuex.Store({
         if(res.status === 200) {
           commit('setToken', res.data.data.token)
           localStorage.setItem('token', res.data.data.token)
-          router.push({name:'About'})
+          router.push({name:'Home'})
+          
         }
+      }).catch((err) => {
+        console.log(err.response)
+      })
+    },
+
+    register({commit}, user) {
+      const userLog= {
+        email : user.email,
+        password : user.password  
+      }
+      axios.post(config.api_route+'auth/register',
+        user , {
+          headers: {'Content-Type': 'application/json'}
+        }
+      ).then(() => {
+        
+        axios.post(config.api_route+'auth/login',
+        userLog , {
+          headers: {'Content-Type': 'application/json'}
+        }
+      ).then((res) => {
+        if(res.status === 200) {
+          commit('setToken', res.data.data.token)
+          localStorage.setItem('token', res.data.data.token)
+          router.push({name:'Home'})
+        }
+      }).catch((err) => {
+        console.log(err.response)
+      })
+
+
       }).catch((err) => {
         console.log(err.response)
       })
@@ -36,6 +67,7 @@ export default new Vuex.Store({
     readToken({commit}) {
       if(localStorage.getItem('token')) {
         commit('setToken', localStorage.getItem('token'))
+
       }else{
         commit('setToken', null)
       }
@@ -44,7 +76,7 @@ export default new Vuex.Store({
     logout({commit}) {
       localStorage.removeItem('token');
       commit('setToken', null);
-      router.push({name:'Home'})
+      router.push({name:'Login'})
     }
   },
   modules: {

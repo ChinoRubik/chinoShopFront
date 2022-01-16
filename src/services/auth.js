@@ -11,5 +11,17 @@ export default {
         }).catch((error) => {
             return error.response
         });
-    }
+    },
+
+    // register(user) {
+    //     return axios.post(`${config.api_route}auth/register`,
+    //     user,
+    //     {headers: { 'Content-Type': 'application/json'}}
+    //     ).then((res) => {
+    //         return res
+    //     }).catch((error) => {
+    //         return error.response
+    //     });
+    // }
+
 }
