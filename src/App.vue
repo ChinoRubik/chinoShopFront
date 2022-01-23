@@ -15,10 +15,10 @@
           <template #left>
             <h1>ChinoShop</h1>
           </template>
-          <vs-navbar-item :active="activeNav == 'guide'" id="guide">
-            Gorras
-          </vs-navbar-item>
-          <vs-navbar-item :active="activeNav == 'docs'" id="docs">
+          <!-- <vs-navbar-item :active="activeNav == 'home'" id="home"> -->
+            <router-link :to="{name: 'Home'}" class="mx-5">Home</router-link>
+          <!-- </vs-navbar-item> -->
+          <!-- <vs-navbar-item :active="activeNav == 'docs'" id="docs">
             Sudaderas
           </vs-navbar-item>
           <vs-navbar-item :active="activeNav == 'components'" id="components">
@@ -26,8 +26,13 @@
           </vs-navbar-item>
           <vs-navbar-item :active="activeNav == 'license'" id="license">
             Chamarras 
-          </vs-navbar-item>
+          </vs-navbar-item> -->
+          <!-- <vs-navbar-item :active="activeNav == 'administrador'" id="administrador"  v-if="roll === 'admin'"> -->
+          <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" > Administrador</router-link>
+
+          <!-- </vs-navbar-item> -->
           <template #right class="">
+            <router-link :to="{name: 'Configuracion'}" class="mr-10"> Configuración</router-link>
             <vs-button flat @click="logout" class="block mr-50"
               >Log out</vs-button
             >
@@ -38,7 +43,7 @@
 
      
     </div>
-    <router-view />
+    <router-view />  
   </div>
 </template>
 
@@ -48,12 +53,12 @@ import { mapActions, mapState } from "vuex";
 export default {
   data() {
     return {
-      activeNav: "guide",
+      activeNav: "home",
     };
   },
 
   computed: {
-    ...mapState(["token"]),
+    ...mapState(["token","roll"]),
   },
 
   methods: {

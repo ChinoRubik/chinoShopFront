@@ -3,19 +3,26 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import config from '../services/config'
 import router from '../router'
+import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: null
+    token: null,
+    roll: null
   },
   mutations: {
     setToken(state, payload) {
       state.token = payload;
+    },
+
+    setRoll(state, payload) {
+      state.roll = payload;
     }
   },
   actions: {
+
     login({commit}, user) {
       axios.post(config.api_route+'auth/login',
         user , {
@@ -67,18 +74,24 @@ export default new Vuex.Store({
     readToken({commit}) {
       if(localStorage.getItem('token')) {
         commit('setToken', localStorage.getItem('token'))
-
       }else{
         commit('setToken', null)
       }
     },
-
+    
     logout({commit}) {
       localStorage.removeItem('token');
       commit('setToken', null);
       router.push({name:'Login'})
+    },
+
+    settingRoll({commit}, data) {
+      commit('setRoll', data)
     }
   },
   modules: {
-  }
+  },
+  
+  plugins: [createPersistedState()]
+
 })

@@ -1,6 +1,5 @@
-import { mapActions } from 'vuex';
 <template>
-  <div class="flex justify-center mt-30">
+  <div class="flex justify-center mt-32">
     <div class="shadow-lg p-10 rounded-lg bg-white">
       <h1 class="text-left text-2xl">Registrarse</h1>
 
@@ -25,12 +24,12 @@ export default {
   data(){
       return{
         user: {
-            name:'prueba',
-            lastname:'prueba',
-            email:'q@q.com',
-            password:'12345678',
+            name:'',
+            lastname:'',
+            email:'',
+            password:'',
         },
-        repeat_password:'12345678'
+        repeat_password:''
 
       }
   },

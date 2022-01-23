@@ -1,10 +1,11 @@
 import axios from 'axios'
 import config from './config'
+import store from '../store/index'
 
 export default {
-    dashboard(token) {
+    dashboard() {
         return axios.get(`${config.api_route}dashboard`,
-        {headers: { 'auth-token' : token ,
+        {headers: { 'auth-token' : store.state.token ,
         'Content-Type': 'application/json'}}
         ).then((res) => {
             return res

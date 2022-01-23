@@ -10,7 +10,7 @@
         <vs-input type="password"  placeholder="Password" class="mb-5" v-model="user.password" />
         <vs-button gradient type="submit"> Iniciar</vs-button>
       </form>
-      <p class="mt-3">¿Aún no estás registrado? <a href="./register" class="hover:text-blue-400 pl-1">Crear una cuenta</a></p>
+      <p class="mt-3">¿Aún no estás registrado? <router-link to="register" class="hover:text-blue-400 pl-1">Crear una cuenta</router-link></p>
     </div>
   </div>
 </template>
