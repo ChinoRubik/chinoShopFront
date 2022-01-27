@@ -23,7 +23,6 @@ const routes = [
     path: '/',
     name: 'Home',
     component: () => import('../views/home.vue'),
-    meta: {isProtect : true}
   },
   {
   path: '/configuracion',
@@ -31,6 +30,11 @@ const routes = [
   component: () => import('../views/config.vue'),
   meta: {isProtect : true}
   },
+  {
+    path: '/carrito',
+    name: 'Carrito',
+    component: () => import('../views/cart.vue'),
+    },
   {
     path: '/admin',
     name: 'Administrador',
@@ -60,7 +64,6 @@ const routes = [
     path: '/detalle/:uuid',
     name: 'Detalle',
     component: () => import('../views/detail.vue'),
-    meta: {isProtect : true}
   },
 ]
 
@@ -74,7 +77,7 @@ router.beforeEach((to, from, next) => {
   const isProtected = to.matched.some(item => item.meta.isProtect);
 
   if(isProtected && store.state.token === null ) {
-    next({name:'Login'})
+    next({name:'Home'}) // pagina no existe
   }  else {
     const isAdmin = to.matched.some(item => item.meta.isAdmin);
       if (isAdmin  && store.state.roll  === 'user') {

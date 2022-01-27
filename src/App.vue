@@ -5,7 +5,7 @@
       <router-link to="/">Home</router-link> -->
       <!-- <button @click="logout">Cerrar sesion</button> -->
 
-      <div class="container mx-auto px-5 mb-16" v-if="token">
+      <div class="container mx-auto px-5 mb-16" >
         <vs-navbar
           target-scroll="#padding-scroll-content"
           padding-scroll
@@ -32,10 +32,17 @@
 
           <!-- </vs-navbar-item> -->
           <template #right class="">
-            <router-link :to="{name: 'Configuracion'}" class="mr-10"> Configuración</router-link>
-            <vs-button flat @click="logout" class="block mr-50"
-              >Log out</vs-button
-            >
+            <div class="">
+              <a href="/carrito"> 
+                  <span class="bg-black font-bold text-white spanNumber rounded text-sm" >{{totalAmount}}</span>
+                <img src="./assets/shopping-cart.png" class="w-8 mr-14" v-if="token"/>
+                <img src="./assets/shopping-cart.png" class="w-8 mr-14" v-else/>
+
+              </a>  
+            </div>                          
+            <a href="/configuracion" class="mr-10" v-if="token"> Configuración</a>
+            <vs-button success flat @click="redirect" class=" " v-if="!token">Sign in</vs-button>
+            <vs-button  flat @click="logout" class="" v-if="token">Log out</vs-button>
           </template>
         </vs-navbar>
         <div id="padding-scroll-content" class="square"></div>
@@ -58,11 +65,15 @@ export default {
   },
 
   computed: {
-    ...mapState(["token","roll"]),
+    ...mapState(["token","roll", "totalAmount"]),
   },
 
   methods: {
     ...mapActions(["readToken", "logout"]),
+
+    redirect() {
+      this.$router.push({name:'Login'})
+    }
   },
   created() {
     this.readToken();
@@ -94,6 +105,17 @@ export default {
 }
 body {
   background-color: #f8f8f8;
+}
+
+.spanNumber{
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top:1px ;
+  padding-bottom:1px ;
+
+  position: absolute;
+  top: -2px;
+  
 }
 
 

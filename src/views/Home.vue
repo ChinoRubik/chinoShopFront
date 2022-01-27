@@ -1,6 +1,6 @@
 <template>
 
-  <div class="flex justify-between container mx-auto	  ">
+  <div class="container mx-auto p-5 ">
 <!-- 
     <div class="bg-white rounded-lg w-1/4 m-10">
       <ul>
@@ -13,30 +13,33 @@
       </ul>
     </div> -->
 
-    <div class="w-100  mt-20">
-      <h1 class="text-3xl mb-5">Productos</h1>
-      <vs-card type="2" v-for="item in products" :key="item.uuid" class="w-1/4 float-left mb-4">
-          <template #title>
-            <h3 class="font-bold">{{item.name}}</h3>
-          </template>
-          <template #img>
-            <a :href="`detalle/${item.uuid}`"> <img :src="`${config.api_route}auth/getImages/${getOneImage(item.image)}`" alt=""></a>
-         
-          </template>
-          <template #text>
-            <p>
-              {{item.description}}
-            </p>
-          </template>
-          <template #interactions>
-            <vs-button danger icon>
-              <i class="far fa-heart text-xl"></i>
-            </vs-button>
-            <vs-button class="btn-chat" shadow primary>
-                <i class="fas fa-shopping-cart text-lg"></i>
-            </vs-button>
-          </template>
-    </vs-card>
+    <div class="w-100  mt-10">
+      <h1 class="text-3xl mb-5">Productos
+</h1>
+      <div class="flex justify-evenly flex-wrap">
+        <vs-card type="2" v-for="item in products" :key="item.uuid" class="mb-8 w-100 sm:w-80">
+            <template #title>
+              <h3 class="font-bold">{{item.name}}</h3>
+            </template>
+            <template #img class="w-100">
+              <a :href="`detalle/${item.uuid}`"> <img :src="`${config.api_route}auth/getImages/${getOneImage(item.image)}`" alt="image"></a>
+          
+            </template>
+            <template #text>
+              <p>
+                {{item.description}}
+              </p>
+            </template>
+            <template #interactions>
+              <vs-button danger icon>
+                <i class="far fa-heart text-xl"></i>
+              </vs-button>
+              <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid)">
+                  <i class="fas fa-shopping-cart text-lg"></i>
+              </vs-button>
+            </template>
+      </vs-card>
+    </div>
 
 
     </div>
@@ -56,7 +59,7 @@ export default {
       config,
       active: 'home',
       products: [],
-      userData: {}
+      userData: {},
     }
   },
 
@@ -64,23 +67,115 @@ export default {
     ...mapState(['token'])
   },
 
-  beforeCreate() {
+  created() {
     adminProducts.getProducts().then((res) => {
       res.data.rows.map((item) => {
         this.products.push(item)
       });
     });
-    serviceAuth.dashboard().then(res => {
-      this.userData = res.data.data.user;
-      this.settingRoll(res.data.data.user.roll);
-    })
+
+    if(this.token === null) {
+      
+      if(!localStorage.getItem('cartTemp')) {
+        localStorage.setItem('cartTemp', JSON.stringify([]))
+      }
+    } else {
+      serviceAuth.dashboard().then(res => {
+        this.userData = res.data.data.user;
+        this.settingRoll(res.data.data.user.roll);
+        this.addToCartPrevent();
+        this.getCart()
+      });
+    }
   },
 
   methods: {
-    ...mapActions(['settingRoll']),
+    ...mapActions(['settingRoll', 'settingTotalAmount']),
 
     getOneImage(path) {
       return path.split(',')[0]
+    },
+    
+    addToCart(product_uuid) {
+
+      if(this.token === null) {
+        const obj = {
+          product_uuid: product_uuid,
+          amount: 1,
+          size: 'm'
+        }
+        let list = JSON.parse(localStorage.getItem('cartTemp'))
+        list.push(obj)
+        localStorage.setItem('cartTemp', JSON.stringify(list))
+        this.$vs.notification({
+            color: 'success',
+            position: 'buttom-right',
+            title:'Producto agregado',
+            text: 'El producto ha sido agregado al carrito'
+        })
+        this.getCartPublic()
+      } else {
+      const obj = {
+        product_uuid: product_uuid,
+        user_uuid: this.userData.uuid
+      }
+      adminProducts.addToCart(obj).then((res) => {
+        if(res.status === 200) {
+          this.$vs.notification({
+              color: 'success',
+              position: 'buttom-right',
+              title:'Producto agregado',
+              text: 'El producto ha sido agregado al carrito'
+          })
+
+          this.getCart();
+        } else {
+          this.$vs.notification({
+              color: 'danger',
+              position: 'buttom-right',
+              title:'Error',
+              text: 'Hubo un error al agregar al carrito'
+          })
+        }
+      });
+      }
+
+
+    },
+
+    getCart() {
+      adminProducts.getCart(this.userData.uuid).then((res) => {
+        let total = 0
+        res.data.rows.map((item) => {
+          total+=item.amount
+        })
+        this.settingTotalAmount(total)
+      });
+    },
+
+    getCartPublic() {
+        const list =JSON.parse(localStorage.getItem('cartTemp'))
+        let total = 0
+        list.map((item) => {
+          total+= item.amount
+        });
+        this.settingTotalAmount(total)
+    },
+
+    addToCartPrevent() {
+      let list = Object.assign([],JSON.parse((localStorage.getItem('cartTemp')))) 
+
+      list.map((item) => {
+        const obj = {
+          product_uuid: item.product_uuid,
+          user_uuid: this.userData.uuid,
+          amount: item.amount,
+          size: item.size
+        }
+        adminProducts.addToCart(obj).then(() => {
+        })
+      })
+      localStorage.removeItem('cartTemp')
     }
   }
 }
@@ -98,7 +193,20 @@ export default {
 .vs-sidebar {
   /* height: 200px; */
 }
-.vs-card-content.type-2 .vs-card__text{
+.vs-card-content{
+  /* width: 100%; */
+}
+
+.vs-card, .vs-card-content.type-2 .vs-card__text{
+  height: auto;
+  max-width: 100%;
   width: 100%;
 }
+
+.vs-card__img {
+    width: 100%;
+}
+
+
+
 </style>

@@ -10,7 +10,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     token: null,
-    roll: null
+    roll: null,
+    totalAmount: 0
   },
   mutations: {
     setToken(state, payload) {
@@ -19,6 +20,10 @@ export default new Vuex.Store({
 
     setRoll(state, payload) {
       state.roll = payload;
+    },
+
+    setTotalAmount(state, payload) {
+      state.totalAmount = payload;
     }
   },
   actions: {
@@ -82,11 +87,16 @@ export default new Vuex.Store({
     logout({commit}) {
       localStorage.removeItem('token');
       commit('setToken', null);
-      router.push({name:'Login'})
+      commit('setRoll', null);
+      router.push({name:'Home'})
     },
 
     settingRoll({commit}, data) {
       commit('setRoll', data)
+    },
+
+    settingTotalAmount({commit}, data) {
+      commit('setTotalAmount', data)
     }
   },
   modules: {
