@@ -9,7 +9,7 @@
         <div v-else class="mt-5">
           <vs-card type="3" v-for="item in cartUpdated" :key="item.uuid" class="mb-5">
             <template #img >
-                <img :src="`${config.api_route}auth/getImages/${getOneImage(item.image)}`" alt="image" >
+                <img :src="item.image" alt="image" >
             </template>
             <template #interactions>
                 <vs-button danger icon>
@@ -25,7 +25,7 @@
                    <p class="leading-10">Talla: <span class="font-bold">{{item.size}}</span></p>
                    <div class="flex ">
                         <p class="leading-10">Cantidad:</p>
-                        <vs-input v-model="item.amount" type="number" class="ml-4 inputNumber"/>
+                        <vs-input v-model="item.amount" type="number" class="ml-4 inputNumber" min="1"/>
                    </div>
                    <p class="leading-10">Precio: $ <span class="font-bold">{{item.price * item.amount}} MXM</span></p>
                    
@@ -83,7 +83,6 @@ export default {
           this.products.push(item)
         });
       this.getCartPublic();
-
       })
 
     } else {
@@ -113,9 +112,8 @@ export default {
 
     getCartPublic() {
       let list = Object.assign([],JSON.parse((localStorage.getItem('cartTemp'))) ) 
-      
       for(var i =0 ;i<list.length ;i++) {
-          
+        
           this.products.map((item) => {
             if(item.uuid === list[i].product_uuid) {
               list[i].category_uuid = item.category_uuid;    
@@ -126,18 +124,17 @@ export default {
               list[i].name = item.name;
               list[i].price = item.price;
               list[i].stock = item.stock;        
-
             }
           })
-     
       }
+
       this.cart = list
+      this.cart.map((item) => {
+        adminProducts.getImages(item.product_uuid).then((res) => {
+            item.image = res.data.rows[0].url
+        });
+      })
       this.concateProducts()
-
-    },
-
-    getOneImage(path) {
-      return path.split(',')[0]
     },
 
     getTotal() {

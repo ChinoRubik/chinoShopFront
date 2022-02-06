@@ -13,6 +13,7 @@ export default {
             return error.response
         });
     },
+
     getProducts() {
         return axios.get(`${config.api_route}dashboard/public/getproducts`,
         ).then((res) => {
@@ -22,8 +23,29 @@ export default {
         });
     },
 
+    getImages(uuid) {
+        return axios.get(`${config.api_route}dashboard/public/getImages/${uuid}`,
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
     addProduct(data) {
         return axios.post(`${config.api_route}dashboard/add`,
+        data,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    updateProduct(data, uuid) {
+        return axios.put(`${config.api_route}dashboard/updateProduct/${uuid}`,
         data,
         {headers: { 'auth-token' : store.state.token ,
         'Content-Type': 'application/json'}}
@@ -44,8 +66,7 @@ export default {
             return error.response
         });
     },
-
-        
+     
     deleteCategory(uuid) {
         return axios.delete(`${config.api_route}dashboard/deletecategory/${uuid}`,
         {headers: {'auth-token': store.state.token }}
@@ -110,6 +131,27 @@ export default {
     deleteFromCart(product_uuid,size) {
         return axios.delete(`${config.api_route}dashboard/deleteFromCart/${product_uuid}/${size}`,
         {headers: { 'auth-token': store.state.token }}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    deleteProduct(uuid) {
+        return axios.delete(`${config.api_route}dashboard/deleteProduct/${uuid}`,
+        {headers: { 'auth-token': store.state.token }}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    getSizes() {
+        return axios.get(`${config.api_route}dashboard/getSizes`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
         ).then((res) => {
             return res
         }).catch((error) => {

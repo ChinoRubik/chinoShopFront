@@ -1,3 +1,3 @@
 export default {
-    api_route : 'http://localhost:4000/api/'
+    api_route : 'https://chinoshop-backend.herokuapp.com/api/'
 } 

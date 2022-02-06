@@ -22,7 +22,7 @@
               <h3 class="font-bold">{{item.name}}</h3>
             </template>
             <template #img class="w-100">
-              <a :href="`detalle/${item.uuid}`"> <img :src="`${config.api_route}auth/getImages/${getOneImage(item.image)}`" alt="image"></a>
+              <a :href="`detalle/${item.uuid}`"> <img :src="item.image" alt="image"></a>
           
             </template>
             <template #text>
@@ -31,12 +31,21 @@
               </p>
             </template>
             <template #interactions>
-              <vs-button danger icon>
-                <i class="far fa-heart text-xl"></i>
-              </vs-button>
-              <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid)">
-                  <i class="fas fa-shopping-cart text-lg"></i>
-              </vs-button>
+              <div clasS="flex -rotate-45">
+                <span class="text-white bg-red-600 font-bold rounded-xl px-2 absolute flex isNew" v-if="item.is_new">
+                  <i class="fas fa-star text-yellow-400 mr-1 mt-1 leading-3"></i>
+                  <p class="">Nuevo</p>
+                </span>
+              </div>
+
+              <div class="flex">
+                <vs-button danger icon>
+                  <i class="far fa-heart text-xl"></i>
+                </vs-button>
+                <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size)">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                </vs-button>
+              </div>
             </template>
       </vs-card>
     </div>
@@ -70,6 +79,9 @@ export default {
   created() {
     adminProducts.getProducts().then((res) => {
       res.data.rows.map((item) => {
+        adminProducts.getImages(item.uuid).then((res) => {
+          item.image = res.data.rows[0].url;
+        });
         this.products.push(item)
       });
     });
@@ -92,17 +104,13 @@ export default {
   methods: {
     ...mapActions(['settingRoll', 'settingTotalAmount']),
 
-    getOneImage(path) {
-      return path.split(',')[0]
-    },
-    
-    addToCart(product_uuid) {
+    addToCart(product_uuid, sizes) {
 
       if(this.token === null) {
         const obj = {
           product_uuid: product_uuid,
           amount: 1,
-          size: 'm'
+          size: this.getSize(sizes)
         }
         let list = JSON.parse(localStorage.getItem('cartTemp'))
         list.push(obj)
@@ -116,6 +124,7 @@ export default {
         this.getCartPublic()
       } else {
       const obj = {
+        size: this.getSize(sizes),
         product_uuid: product_uuid,
         user_uuid: this.userData.uuid
       }
@@ -176,6 +185,10 @@ export default {
         })
       })
       localStorage.removeItem('cartTemp')
+    },
+
+    getSize(sizes) {
+      return sizes.split(',')[0]
     }
   }
 }
@@ -207,6 +220,11 @@ export default {
     width: 100%;
 }
 
+.vs-card__interactions {
+  padding: 5px 5px 0px 0px;
+  width: 100%;
+  justify-content: space-between;
+}
 
 
 </style>

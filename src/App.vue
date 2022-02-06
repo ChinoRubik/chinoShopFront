@@ -40,7 +40,7 @@
 
               </a>  
             </div>                          
-            <a href="/configuracion" class="mr-10" v-if="token"> Configuración</a>
+            <a href="/configuracion" class="mr-10" v-if="token"> <i class="fas fa-user text-3xl"></i></a>
             <vs-button success flat @click="redirect" class=" " v-if="!token">Sign in</vs-button>
             <vs-button  flat @click="logout" class="" v-if="token">Log out</vs-button>
           </template>

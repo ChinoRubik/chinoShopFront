@@ -42,7 +42,7 @@ const routes = [
     meta: {isProtect : true, isAdmin: true}
   },
   {
-    path: '/admin/agrega-producto',
+    path: '/admin/agrega-producto/:uuid?',
     name: 'agregaProducto',
     component: addProduct,
     meta: {isProtect : true, isAdmin: true}

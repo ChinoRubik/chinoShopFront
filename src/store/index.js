@@ -28,22 +28,27 @@ export default new Vuex.Store({
   },
   actions: {
 
-    login({commit}, user) {
-      axios.post(config.api_route+'auth/login',
-        user , {
-          headers: {'Content-Type': 'application/json'}
-        }
-      ).then((res) => {
-        if(res.status === 200) {
-          commit('setToken', res.data.data.token)
-          localStorage.setItem('token', res.data.data.token)
-          router.push({name:'Home'})
-          
-        }
-      }).catch((err) => {
-        console.log(err.response)
-      })
-    },
+      // login({commit}, user) {
+    //   axios.post(config.api_route+'auth/login',
+    //     user , {
+    //       headers: {'Content-Type': 'application/json'}
+    //     }
+    //   ).then((res) => {
+    //     if(res.status === 200) {
+    //       commit('setToken', res.data.data.token)
+    //       localStorage.setItem('token', res.data.data.token)
+    //       router.push({name:'Home'})
+    //     }
+    //   }).catch((error) => {
+    //     console.log(error.status, 'undefined')
+    //     // vs.notification({
+    //     //   color: 'danger',
+    //     //   position: 'buttom-right',
+    //     //   title:'Error agregado',
+    //     //   text: 'El producto ha sido agregado al carrito'
+    //     // })
+    //   })
+    // },
 
     register({commit}, user) {
       const userLog= {
@@ -88,11 +93,16 @@ export default new Vuex.Store({
       localStorage.removeItem('token');
       commit('setToken', null);
       commit('setRoll', null);
-      router.push({name:'Home'})
+      commit('setTotalAmount', 0);
+      router.push({name:'Login'}).catch((err)=>{ console.log(err)});
     },
 
     settingRoll({commit}, data) {
       commit('setRoll', data)
+    },
+
+    settingToken({commit}, data) {
+      commit('setToken', data)
     },
 
     settingTotalAmount({commit}, data) {
