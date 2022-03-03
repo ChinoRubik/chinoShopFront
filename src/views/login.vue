@@ -35,17 +35,24 @@ export default {
 
     login(user) {
       authService.login(user).then((res) => {
+      
         if(res.status === 200) {
+          let name = ''
+      
           this.settingToken( res.data.data.token)
           localStorage.setItem('token', res.data.data.token)
-          this.$router.push({name:'Home'})
-          this.$vs.notification({
-            icon: '<i class="fas fa-sign-in-alt"></i>',
-            color: 'success',
-            position: 'top-right',
-            title:'Log in',
-            text: 'Has iniciado sesión exitosamente'
+            authService.dashboard().then((res) => {
+            name = res.data.data.user.name
+            this.$vs.notification({
+              icon: '<i class="fas fa-sign-in-alt"></i>',
+              color: 'success',
+              position: 'top-right',
+              title:`Bienvenido ${name}`,
+              text: 'Has iniciado sesión exitosamente'
           })
+          })
+          this.$router.push({name:'Home'})
+
         }
 
         if(res.status === 400) {

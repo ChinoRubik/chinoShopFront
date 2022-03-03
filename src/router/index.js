@@ -34,7 +34,25 @@ const routes = [
     path: '/carrito',
     name: 'Carrito',
     component: () => import('../views/cart.vue'),
-    },
+  },
+  {
+    path: '/pagoInformacion/:uuid',
+    name: 'Checkout',
+    component: () => import('../views/paymentInfo.vue'),
+    meta: {isProtect : true}
+  },
+  {
+    path: '/envioInformacion/:uuid',
+    name: 'Shipping',
+    component: () => import('../views/shippingInfo.vue'),
+    meta: {isProtect : true}
+  },
+  {
+    path: '/pago/:uuid',
+    name: 'Payment',
+    component: () => import('../views/confirmPayment.vue'),
+    meta: {isProtect : true}
+  },
   {
     path: '/admin',
     name: 'Administrador',
@@ -64,6 +82,11 @@ const routes = [
     path: '/detalle/:uuid',
     name: 'Detalle',
     component: () => import('../views/detail.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/notFound.vue'),
   },
 ]
 

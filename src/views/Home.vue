@@ -14,10 +14,10 @@
     </div> -->
 
     <div class="w-100  mt-10">
-      <h1 class="text-3xl mb-5">Productos
+      <h1 class="text-3xl mb-2">Productos
 </h1>
       <div class="flex justify-evenly flex-wrap">
-        <vs-card type="2" v-for="item in products" :key="item.uuid" class="mb-8 w-100 sm:w-80">
+        <vs-card type="2" v-for="item in products" :key="item.uuid" class="mb-8 col-12 col-lg-4">
             <template #title>
               <h3 class="font-bold">{{item.name}}</h3>
             </template>

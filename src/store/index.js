@@ -11,7 +11,7 @@ export default new Vuex.Store({
   state: {
     token: null,
     roll: null,
-    totalAmount: 0
+    totalAmount: 0,
   },
   mutations: {
     setToken(state, payload) {

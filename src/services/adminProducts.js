@@ -158,4 +158,73 @@ export default {
             return error.response
         });
     },
+
+    addSale(data) {
+        return axios.post(`${config.api_route}dashboard/addSale`,
+        data,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    getSale(user_uuid) {
+        return axios.get(`${config.api_route}dashboard/getSale/${user_uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    getSaleByUuid(uuid) {
+        return axios.get(`${config.api_route}dashboard/getSaleByUuid/${uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    addAddress(data) {
+        return axios.post(`${config.api_route}dashboard/addAddress`,
+        data,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    getAddress(sale_uuid) {
+        return axios.get(`${config.api_route}dashboard/getAddress/${sale_uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    updateAddress(sale_uuid, data) {
+        return axios.put(`${config.api_route}dashboard/updateAddress/${sale_uuid}`,
+        data,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-2/3 container mx-auto mt-32 ">
+  <div class="w-2/3 container mx-auto mt-32 mb-5">
     <div class="">  
         <h1 class="text-3xl font-bold text-center">Tu Carrito</h1>
         <div v-if="totalAmount === 0" class="text-xl mt-5 text-gray-500">
@@ -35,15 +35,14 @@
             </template>
           </vs-card>
         
-          <div class="w-100 mt-10 text-right">
+          <div class=" text-right flex justify-end">
+            <div>
               <p class="font-bold">Sub total</p>
               <p>$ <span class="font-bold">{{getTotal()}}</span> MXM</p>
               <p>Costo de envío se muestran en el checkout</p>
               <p>El Importe final será cobrado en Pesos Mexicanos (MXN)</p>
-
-              <vs-button success @click="proccedPayment"   class="buttonSuccess ">Continuar</vs-button>
-              <!-- <vs-button    class="buttonSuccess ">Actualizar</vs-button> -->
-
+              <vs-button success @click="proccedPayment"   class="buttonSuccess float-right">Continuar</vs-button>
+            </div>
           </div>
         </div>
     </div>
@@ -104,8 +103,11 @@ export default {
     getCart() {
         adminProducts.getCart(this.userData.uuid).then((res) => {
         this.cart = res.data.rows;
-            console.log(this.cart)
-
+        this.cart.map((item) => {
+          adminProducts.getImages(item.product_uuid).then((res) => {
+              item.image = res.data.rows[0].url
+          });
+        })  
         this.concateProducts()
         });
     },
@@ -251,8 +253,23 @@ export default {
         })
         this.$router.push({name:'Login'})
       } else {
-        console.log(this.cartUpdated)
+        adminProducts.getSale(this.userData.uuid).then((res) => {
+          if(res.data.rows.length === 1) {
+            this.$router.push({name: 'Checkout', params: {uuid: res.data.rows[0].uuid}})
+          } else {
+            const obj = {
+              list: JSON.stringify(this.cartUpdated),
+              user_uuid: this.userData.uuid,
+              total: 0
+            }
 
+            adminProducts.addSale(obj).then((res) => {
+              if(res.status === 200) {
+                this.$router.push({name: 'Checkout', params: {uuid: res.data.uuid}})
+              }
+            })
+          }
+        })
       }
     }
 
@@ -285,8 +302,7 @@ export default {
 }
 
 .buttonSuccess{
-    float: right;
-    margin-top:18px ;
+    width: 200px;
 }
 .vs-notification__content__text p{
   font-size: 17px;
