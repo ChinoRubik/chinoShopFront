@@ -8,29 +8,39 @@
         </div>
         <div class="bg-white w-4/6 px-10 py-2 rounded-xl shadow-lg">
             <div><i class="fas fa-times-circle text-red-500 text-2xl hover:text-red-700 block float-right cursor-pointer" @click="showConfirm=true" v-if="roll === 'admin'"></i>
-              <i class="fas fa-edit text-yellow-500 text-2xl hover:text-yellow-700 cursor-pointer float-right mr-5" @click="updateProduct(product.uuid)" v-if="roll === 'admin'"></i>
+              <i class="fas fa-edit text-yellow-500 text-2xl hover:text-yellow-700 cursor-pointer float-right mr-3" @click="updateProduct(product.uuid)" v-if="roll === 'admin'"></i>
             </div>
 
             <h2 class="font-bold text-2xl text-left">{{product.name}}</h2>
-            <p class="text-left text-gray-500 mb-5 text-md"> {{ getCategory(product.category_uuid) }}</p>
-            <p class="font-bold text-2xl text-left mb-5"> $ {{product.price}} MXM</p>
-            <form class="flex mb-5">
-                <div class="select mr-5">
-                    <label class="text-left block text-gray-500">Talla:</label>
-                  <v-select v-model="size" :options="sizesAvaible" />
-
+            <p class="text-left text-gray-500 mb-4 text-md"> {{ getCategory(product.category_uuid) }}</p>
+            <div v-if="(totalStock !== 0)">
+               <div v-if="product.discount !== 0" class="flex flex-wrap mb-4"> 
+                  <strong class="w-100 text-left text-2xl"> <del>${{product.price}}.00 MXM</del></strong>
+                  <span class="w-100 text-left text-xl" v-if="product.discount !== 0">${{ product.price - (product.price / 100) * product.discount}}.00 MXM</span>
                 </div>
-                <div  class="inputNumber">
+                <strong v-else class="block w-100 text-left text-2xl mb-4"> ${{product.price}} MXM</strong>
+              <form class="flex mb-2" >
+                  <div class="select mr-5">
+                      <label class="text-left block text-gray-500">Talla:</label>
+                    <v-select v-model="size" :options="sizesAvaible" />
+                  </div>
+                  <div class="inputNumber" v-if="isThereStockForSize">
                     <label class="text-left block text-gray-500">Cantidad:</label>
                     <vs-input v-model="amount" type="number" min="1"/>
-                </div>
+                  </div>
+              </form>     
+              <vs-button @click="submitted(product.uuid)" success class="block buttonAdd" v-if="isThereStockForSize">Agregar al carrito</vs-button>
+              <div class="bg-black rounded-xl p-1 text-white font-bold" v-if="!isThereStockForSize && size !== null">
+                    Se ha agotado la talla {{size}}
+              </div>
+            </div>
+            <div v-else class="bg-black p-3 text-white font-bold">
+              Sin inventario
+            </div>
+            <p for="descripcion" class="font-bold text-2xl text-left mt-4">Descripción:</p>
+            <p class="text-left text-gray-500 mb-2 text-md">{{product.description}}</p>
 
-            </form>                
-            <vs-button @click="submitted(product.uuid)" success class="block w-1/2 buttonAdd">Agregar al carrito</vs-button>
-            <p for="descripcion" class="font-bold text-2xl text-left mt-10">Descripción:</p>
-            <p class="text-left text-gray-500 mb-5 text-md">{{product.description}}</p>
-
-            <p for="descripcion" class="font-bold text-2xl text-left mt-10">Cambios y devoluciones:</p>
+            <p for="descripcion" class="font-bold text-2xl text-left mt-4">Cambios y devoluciones:</p>
             <p class="text-justify my-2 text-gray-500">Al hacer tu compra en línea tienes 30 días naturales a partir de que se genere tu pedido para solicitar un cambio.
                 Por el momento no realizamos devoluciones. Para más información consulta nuestros términos y condiciones
             </p>
@@ -83,7 +93,9 @@ export default {
           userData: {},
           showConfirm: false,
           sizesAvaible: [],
-          stock:[]
+          stock: [],
+          totalStock: 0,
+          isThereStockForSize: true,
       }
   },
 
@@ -98,17 +110,7 @@ export default {
   },
 
   created() {
-    adminProducts.getProduct(this.$route.params.uuid).then((res) => {
-      this.product = res.data.rows[0]
-      this.getImages(this.product.uuid)
-      this.sizesAvaible = this.product.size.split(',')
-      this.theresStock();
-
-    });
-
-    adminProducts.getCategories().then((res) => {
-        this.categories = res.data.rows;
-    });
+    this.getProduct();
 
     if(this.token === null) {
       console.log('no logueado')
@@ -122,6 +124,22 @@ export default {
   methods: {
       ...mapActions(['settingTotalAmount']),
 
+      getProduct() {
+        adminProducts.getProduct(this.$route.params.uuid).then((res) => {
+          if(res.data.rows.length === 0) {
+            this.$router.push({name: 'NotFound', params:{pathMatch2: this.$route.params.uuid, pathMatch: 'detalle'}})
+          } else {
+            this.product = res.data.rows[0]
+            this.getImages(this.product.uuid)
+            this.sizesAvaible = this.product.size.split(',')
+          }
+          this.totalStock = this.theresStock();
+        });
+
+        adminProducts.getCategories().then((res) => {
+            this.categories = res.data.rows;
+        });
+      },
 
       getImages(uuid) {
           adminProducts.getImages(uuid).then((res) => {
@@ -139,7 +157,8 @@ export default {
                 category = item.category
             }
         })
-        return category
+        // category = this.capitalize(category);
+        return category;
       },
 
       submitted(product_uuid) {
@@ -152,41 +171,59 @@ export default {
               text: `Selecciona una talla`,
           })
         } else {
-             if(this.token === null) {
-            const obj = {
-              product_uuid: product_uuid,
-              amount: parseInt(this.amount),
-              size: this.size
-            }
-            let list = JSON.parse(localStorage.getItem('cartTemp'))
-            list.push(obj)
-            localStorage.setItem('cartTemp', JSON.stringify(list))
-            this.$vs.notification({
-              color: 'success',
-              position: 'buttom-right',
-              title:'Producto agregado',
-              text: 'El producto ha sido agregado al carrito'
-            })
-            this.getCartPublic()
-          } else {
-            const obj = {
-                product_uuid: product_uuid,
-                user_uuid: this.userData.uuid,
-                size: this.size,
-                amount: this.amount
-            }
-            adminProducts.addToCart(obj).then((res) => {
-              if(res.status === 200) {
+          // let flagAmount = true
+          // this.stock.map((item) => {
+          //   if(item.size === this.size) {
+          //     this.amount > item.stock ? flagAmount = false : flagAmount = true
+          //   }
+          // })
+
+          // if(flagAmount) {
+            if(this.token === null) {
+                  const obj = {
+                    product_uuid: product_uuid,
+                    amount: parseInt(this.amount),
+                    size: this.size
+                  }
+                  let list = JSON.parse(localStorage.getItem('cartTemp'))
+                  list.push(obj)
+                  localStorage.setItem('cartTemp', JSON.stringify(list))
                   this.$vs.notification({
-                      color: 'success',
-                      position: 'buttom-right',
-                      title:'Producto agregado',
-                      text: 'El producto ha sido agregado al carrito'
+                    color: 'success',
+                    position: 'buttom-right',
+                    title:'Producto agregado',
+                    text: 'El producto ha sido agregado al carrito'
                   })
-                  this.getCart()
-              }
-            })
-          }
+                  this.getCartPublic()
+                } else {
+                  const obj = {
+                      product_uuid: product_uuid,
+                      user_uuid: this.userData.uuid,
+                      size: this.size,
+                      amount: this.amount
+                  }
+                  adminProducts.addToCart(obj).then((res) => {
+                    if(res.status === 200) {
+                        this.$vs.notification({
+                            color: 'success',
+                            position: 'buttom-right',
+                            title:'Producto agregado',
+                            text: 'El producto ha sido agregado al carrito'
+                        })
+                        this.getCart()
+                    }
+                  })
+                }
+          // } else {
+          //   this.$vs.notification({
+          //       icon: `<i class="fas fa-exclamation-circle"></i>`,
+          //       color: 'danger',
+          //       position: 'top-right',
+          //       title: 'Ups!',
+          //       text: `No hay suficiente stock`,
+          //   })
+          // }
+      
         }
       },
 
@@ -231,17 +268,40 @@ export default {
       },
 
       theresStock() {
+        let totalStock = 0;
         const my_split = this.product.stock.split('},')
             for(var i = 0; i<my_split.length; i++) {
                 if(my_split.length > 1 && i !== my_split.length-1 ) {
-                      this.stock.push(JSON.parse(my_split[i]+'}').stock)
+                      this.stock.push(JSON.parse(my_split[i]+'}'))
+                      totalStock += parseInt(JSON.parse(my_split[i]+'}').stock);
                 } else{
-                      this.stock.push(JSON.parse(my_split[i]).stock)
+                      this.stock.push(JSON.parse(my_split[i]))
+                      totalStock += parseInt(JSON.parse(my_split[i]).stock);
+
                 }
             }
-        console.log(this.stock, 'Esta es mi estock')
-      }
+        return totalStock;
+      },
 
+      // capitalize(word) {
+      //   console.log(word)
+      //   return word[0].toUpperCase() + word.slice(1).toLowerCase();
+      // },
+  },
+
+  watch: {
+    size(val) {
+      this.amount = 1;
+      this.stock.map((item) => {
+        if(item.size === val || val == null) {
+          if(parseInt(item.stock) !== 0) {
+            this.isThereStockForSize = true ;
+          } else {
+            this.isThereStockForSize = false;
+          }
+        }
+      })
+    },
   }
 };
 </script>

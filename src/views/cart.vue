@@ -27,7 +27,12 @@
                         <p class="leading-10">Cantidad:</p>
                         <vs-input v-model="item.amount" type="number" class="ml-4 inputNumber" min="1"/>
                    </div>
-                   <p class="leading-10">Precio: $ <span class="font-bold">{{item.price * item.amount}} MXM</span></p>
+                    <div v-if="item.discount !== 0" class="flex flex-wrap mb-4"> 
+                      <span class="w-100">Precio: </span>
+                      <div><strong class="text-left"> <del>${{item.price}}.00 MXM</del></strong><span class="ml-2" v-if="item.discount !== 0">${{ item.price - (item.price / 100) * item.discount}}.00 MXM</span></div>
+                    </div>
+                    <span v-else >Precio: <strong class="block w-100 text-left mb-4"> ${{item.price}} MXM</strong></span>
+                   <!-- <p class="leading-10">Precio: $ <span class="font-bold">{{item.price * item.amount}} MXM</span></p> -->
                    
                     <vs-button danger flat @click.prevent="deleteFromCart(item.product_uuid, item.size)" class="buttonDelete">Quitar del carrito</vs-button>
 
@@ -38,7 +43,7 @@
           <div class=" text-right flex justify-end">
             <div>
               <p class="font-bold">Sub total</p>
-              <p>$ <span class="font-bold">{{getTotal()}}</span> MXM</p>
+              <p>$ <span class="font-bold">{{getTotal()}}.00</span> MXM</p>
               <p>Costo de envío se muestran en el checkout</p>
               <p>El Importe final será cobrado en Pesos Mexicanos (MXN)</p>
               <vs-button success @click="proccedPayment"   class="buttonSuccess float-right">Continuar</vs-button>
@@ -65,7 +70,7 @@ export default {
           xd: [],
           cartUpdated: [],
           imagesPath:[],
-          products: []
+          products: [],
       }
   },
 
@@ -142,7 +147,12 @@ export default {
     getTotal() {
         let total = 0
         this.cartUpdated.map((item) => {
-            total+= item.amount * item.price;
+            if(item.discount !== 0) {
+              total +=  item.price * item.amount;
+              total -=  (item.price/100 * item.discount) * item.amount;
+            } else {
+              total +=  item.price * item.amount;
+            }
         })
         return total
     },
@@ -215,18 +225,17 @@ export default {
             this.cartUpdated.map((item) => {
               if(item.product_uuid === product_uuid && item.size == size) {
                 console.log()
-              } else{
+              } else{ 
                 rest.push(item)
               }
             }) 
             this.cartUpdated = rest;
             this.getCartNumber()
           }
-
         })
       }
-
     },
+    
     
     getCartNumber() {
       adminProducts.getCart(this.userData.uuid).then((res) => {
@@ -253,28 +262,87 @@ export default {
         })
         this.$router.push({name:'Login'})
       } else {
-        adminProducts.getSale(this.userData.uuid).then((res) => {
-          if(res.data.rows.length === 1) {
-            this.$router.push({name: 'Checkout', params: {uuid: res.data.rows[0].uuid}})
-          } else {
-            const obj = {
-              list: JSON.stringify(this.cartUpdated),
-              user_uuid: this.userData.uuid,
-              total: 0
-            }
 
-            adminProducts.addSale(obj).then((res) => {
-              if(res.status === 200) {
-                this.$router.push({name: 'Checkout', params: {uuid: res.data.uuid}})
-              }
-            })
+        //Hay stock
+        let theresStockFlag = true;
+        this.cartUpdated.map((item) => {
+          if(!this.thereStock(item)) {
+            this.$vs.notification({
+              icon: `<i class="fas fa-exclamation-circle"></i>`,
+              color: 'danger',
+              position: 'top-right',
+              title: 'Ups!',
+              text: `No tenemos suficiente STOCK para ${item.name} en la talla ${item.size}`,
+            });
+            theresStockFlag = false
           }
-        })
+        });
+
+        if(theresStockFlag) {
+          adminProducts.getSale(this.userData.uuid).then((res) => {
+            let isIncompleteSale = false
+            res.data.rows.map((item) => {
+              if(item.isDone === 0) {
+                isIncompleteSale = true
+                console.log('impossibbble')
+              }
+            });
+
+            if(res.data.rows.length !== 0 && isIncompleteSale) { 
+    
+              let uuidSale = null;
+              res.data.rows.map((item) => {
+                if(item.isDone === 0) {
+                  uuidSale = item.uuid;
+                }
+              });
+              const objUpdated = {
+                list: JSON.stringify(this.cartUpdated)
+              }
+              adminProducts.updateSale(uuidSale, objUpdated);  
+              this.$router.push({name: 'Checkout', params: {uuid: uuidSale}})
+            } else {
+              const obj = {
+                list: JSON.stringify(this.cartUpdated),
+                user_uuid: this.userData.uuid,
+                total: 0
+              }
+
+              adminProducts.addSale(obj).then((res) => {
+                if(res.status === 200) {
+                  this.$router.push({name: 'Checkout', params: {uuid: res.data.uuid}})
+                }
+              })
+            }
+          })
+        }
       }
+    },
+
+    thereStock(product) {
+      let stock = []
+      let isThereStock = true;
+      const my_split = product.stock.split('},')
+        for(var i = 0; i<my_split.length; i++) {
+            if(my_split.length > 1 && i !== my_split.length-1 ) {
+              stock.push(JSON.parse(my_split[i]+'}'))
+            } else{
+              stock.push(JSON.parse(my_split[i]))
+            }
+        }
+      
+      stock.map((item) => {
+        if(product.size === item.size) {
+          if(parseInt(product.amount) > parseInt(item.stock)) {
+            isThereStock = false;
+          } else {
+            isThereStock = true;
+          }
+        }
+      })
+      return isThereStock;
     }
-
   },
-
 
 }
 </script>

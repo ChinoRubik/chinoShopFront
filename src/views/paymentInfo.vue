@@ -112,7 +112,7 @@ export default {
     existsUuidSale() {
       adminProducts.getSaleByUuid(this.$route.params.uuid).then((res) => {
         if(res.data.rows.length === 0) {
-          this.$router.push({name: 'NotFound'})
+          this.$router.push({name: 'NotFound', params:{pathMatch2: this.$route.params.uuid, pathMatch: 'pagoInformacion'}})
         }
       })
     },
@@ -271,15 +271,10 @@ export default {
             title:'Guardado',
             text: 'OK'
           })
-          console.log(this.adddess)
           if(!this.addressFlag) {
-            adminProducts.updateAddress(this.$route.params.uuid, this.adddess).then((res) => {
-              console.log(res)
-            })
+            adminProducts.updateAddress(this.$route.params.uuid, this.adddess).then(() => {})
           } else {
-            adminProducts.addAddress(this.adddess).then((res) => {
-              console.log(res)
-            })
+            adminProducts.addAddress(this.adddess).then(() => {})
           }
     
           this.$router.push({name: 'Shipping', params:{uuid: this.$route.params.uuid}})

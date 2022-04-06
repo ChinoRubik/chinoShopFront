@@ -193,6 +193,40 @@ export default {
         });
     },
 
+    updateSale(uuid, data) {
+        return axios.put(`${config.api_route}dashboard/updateSale/${uuid}`,
+        data,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    deleteSale(uuid) {
+        return axios.delete(`${config.api_route}dashboard/deleteSale/${uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    deleteAllCart(user_uuid) {
+        return axios.delete(`${config.api_route}dashboard/deleteAllCart/${user_uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
     addAddress(data) {
         return axios.post(`${config.api_route}dashboard/addAddress`,
         data,

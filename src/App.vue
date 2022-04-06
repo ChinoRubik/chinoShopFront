@@ -171,6 +171,7 @@ body {
 .aSocialIcon:hover {
   transform: scale(1.2);
   transition: all 500ms;
+  color: #026299;
 }
 
 </style>

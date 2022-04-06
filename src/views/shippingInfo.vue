@@ -61,7 +61,7 @@ export default {
     existsUuidSale() {
       adminProducts.getSaleByUuid(this.$route.params.uuid).then((res) => {
         if(res.data.rows.length === 0) {
-          this.$router.push({name: 'NotFound'})
+          this.$router.push({name: 'NotFound', params:{pathMatch2: this.$route.params.uuid, pathMatch: 'envioInformacion'}})
         }
       })
     },

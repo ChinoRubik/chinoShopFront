@@ -2,33 +2,40 @@
  <div class="flex justify-center mt-32">
     <div class="shadow-lg px-10 py-5 rounded-lg bg-white">
       <h1 class="text-left text-2xl" v-if="updateProduct">Actualiza producto</h1>
-      <h1 class="text-left text-2xl" v-else>agrega producto</h1>
+      <h1 class="text-center text-2xl mb-4" v-else>Agrega producto</h1>
 
-      <form >
-        <vs-input v-model="product.name" placeholder="Nombre producto" class="my-5 w-100" type="text" />
-        <vs-input v-model="product.price" placeholder="precio" class="my-5 w-100" type="number" />
-        <!-- <vs-select placeholder="Categorias" v-model="product.category_uuid" class="w-100">
-            <vs-option :label="val.label" :value="val.value" v-for="(val,index) in categories" :key="index">
-                {{val.label}} 
-            </vs-option>
-        </vs-select> -->
-        <label for="categories" class="text-gray-400 text-left">Categoria:</label>
-        <v-select v-model="product.category_uuid" :options="categories" id="categories"/>
+      <form class="flex flex-wrap">
+        <div class="col-12 col-md-6">
+            <label for="name" class="text-left block text-gray-400">Nombre producto:</label>
+            <vs-input v-model="product.name" placeholder="Nombre producto" class="w-100" type="text"/>
+            
+            <label for="price" class="text-left block mt-3 text-gray-400">Precio:</label>
+            <vs-input v-model="product.price" placeholder="Precio" class="w-100" type="number" />
 
-        <textarea v-model="product.description" placeholder="descripcion" class="my-5 block" type="password" ></textarea>
-        <label for="sizesSelected" class="text-gray-400">Selecciona tallas disponibles:</label>
-        <v-select multiple v-model="product.size" :options="sizes" id="sizesSelected"/>
+            <label for="categories" class="text-gray-400 text-left block mt-3">Categoria:</label>
+            <v-select v-model="product.category_uuid" :options="categories" id="categories"/>
 
+            <label for="description" class="text-gray-400 text-left block mt-3">Descripción:</label>
+            <textarea v-model="product.description" placeholder="descripcion" class="block" type="password" ></textarea>
 
-        <vs-checkbox v-model="product.is_new" class="my-5">¿Es nuevo? </vs-checkbox>
-        <vs-input v-model="product.discount" placeholder="descuento" class="my-5 w-100" type="number" />
-        <vs-input v-model="stockSelected[index]" :placeholder="`stock para talla ${item.toUpperCase()}`" class="my-5 " type="number" v-for="(item, index) in product.size" :key="item"/>
+            <label for="sizesSelected" class="text-gray-400 block text-left my-3">Selecciona tallas disponibles:</label>
+            <v-select multiple v-model="product.size" :options="sizes" id="sizesSelected"/>
 
-        <label for="images" class="text-gray-400 block w-100 text-left mb-2">Sube imagenes:</label>
-        <input type="file" ref="myFile" name="image" multiple id="images" class="mb-10"/>
+            <vs-checkbox v-model="product.is_new" class="my-3">¿Es nuevo? </vs-checkbox>
+        </div>
+        <div class="col-12 col-md-6">
+            <label for="discount" class="text-gray-400 block text-left my-3">Descuento en %:</label>
+            <vs-input v-model="product.discount" placeholder="descuento" class="w-100" type="number" />
 
-        <vs-button type="submit" @click.prevent="submitted" gradient > <span v-if="updateProduct">Actualiza producto</span> <span v-else> Agrega producto</span></vs-button>
+            <div v-for="(item, index) in product.size" :key="index">
+                <label for="stock" class="text-gray-400 block text-left my-3" >Stock para talla {{item.toUpperCase()}}:</label>
+                <vs-input v-model="stockSelected[index]" :placeholder="`Stock para talla ${item.toUpperCase()}`" type="number"/>
+            </div>
+            <label for="images" class="text-gray-400 block w-100 text-left mb-2 mt-3">Sube imagenes:</label>
+            <input type="file" ref="myFile" name="image" multiple id="images" class="mb-10 col-10"/>
 
+            <vs-button type="submit" @click.prevent="submitted" gradient > <span v-if="updateProduct">Actualiza producto</span> <span v-else> Agrega producto</span></vs-button>
+        </div>
       </form>
     </div>
   </div>
@@ -101,9 +108,20 @@ export default {
             this.product.stock = this.stockSelected.toString();
 
             if(this.updateProduct) {
-                adminProducts.updateProduct(this.product, this.$route.params.uuid).then(() => {
+                adminProducts.updateProduct(this.product, this.$route.params.uuid).then((res) => {
+                    if (res.status ===200) {
+                        this.product = new Product('','','','','',false,'','','')
+                        this.$router.push({name: 'Home'})
+                        this.$vs.notification({
+                            color: 'success',
+                            position: 'top-right',
+                            title:'Producto actualizado',
+                            text: 'El producto ha sido actualizado correctamente'
+                        })
+                    }
                     this.$router.push({name: 'Detalle', params: { uuid: this.$route.params.uuid }})
                 });
+
             } else {
 
                 var file = this.$refs.myFile.files;

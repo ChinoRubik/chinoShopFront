@@ -78,8 +78,9 @@ export default {
 
   methods: { 
 
-    getPayment(user_uuid) {
-        adminProducts.getSale(user_uuid).then((res) => {
+    getPayment() {
+        adminProducts.getSaleByUuid(this.$route.params.uuid).then((res) => {
+       
            this.dataPayment = JSON.parse(res.data.rows[0].list)
            this.getTotal();
 
@@ -90,7 +91,7 @@ export default {
       authService.dashboard().then((res) => {
         if(res.status ===200) {
           this.user = res.data.data.user;
-          this.getPayment(this.user.uuid);
+          this.getPayment();
         }
       });
     },
@@ -106,7 +107,11 @@ export default {
       })
       this.total+= this.shipping;
       this.total-= this.totalDiscount;
+      this.$emit('getTotalFromSide', this.total)
+      this.$emit('getProductsFromSide', this.dataPayment)
     },
+
+
   }
 }
 </script>

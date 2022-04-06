@@ -14,7 +14,7 @@ export default {
           to: { name: "Carrito" },
         },
         {
-          text: "Informacion",
+          text: "Información",
           to: { name: "Checkout", params: { uuid: this.$route.params.uuid}},
         },
         {

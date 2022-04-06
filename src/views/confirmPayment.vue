@@ -30,7 +30,7 @@
         >
       </div>
     </div>
-    <SideCart class="bg-gray-100 col-5 p-5"></SideCart>
+    <SideCart class="bg-gray-100 col-5 p-5" v-on:getTotalFromSide="getTotal" v-on:getProductsFromSide="getProducts"></SideCart>
   </div>
 </template>
 
@@ -49,6 +49,8 @@ export default {
       address: {},
       active: [false, false],
       changed: false,
+      total: 0,
+      products: null
     };
   },
 
@@ -66,7 +68,7 @@ export default {
     existsUuidSale() {
       adminProducts.getSaleByUuid(this.$route.params.uuid).then((res) => {
         if(res.data.rows.length === 0) {
-          this.$router.push({name: 'NotFound'})
+          this.$router.push({name: 'NotFound', params:{pathMatch2: this.$route.params.uuid, pathMatch: 'pago'}})
         }
       })
     },
@@ -115,6 +117,13 @@ export default {
      
     },
 
+    getTotal(data) {
+      this.total = data;
+    },
+
+    getProducts(data) {
+      this.products = data;
+    },
     submitted() {
       let selectedPayment = 0
       this.active.map((item) => {
@@ -133,7 +142,46 @@ export default {
         })
 
       } else {
-        console.log(this.active)
+
+        this.products.map((item) => {
+          console.log(item)
+          let stock = []
+          const my_split = item.stock.split('},')
+          for(var i = 0; i<my_split.length; i++) {
+            if(my_split.length > 1 && i !== my_split.length-1 ) {
+              stock.push(JSON.parse(my_split[i]+'}'))
+            } else{
+              stock.push(JSON.parse(my_split[i]))
+            }
+          }
+          stock.map((itemStock) => {
+            if (itemStock.size === item.size) {
+              itemStock.stock -= item.amount
+            }
+          })
+          let newStock  = []
+          stock.map((item) => {
+            newStock.push(JSON.stringify(item))
+          })
+          const obj = {
+            stock: newStock.toString()
+          }
+          adminProducts.updateProduct(obj, item.product_uuid)
+        })
+        const objUpdated = {
+          isDone: true,
+          total: this.total
+        } 
+
+        adminProducts.updateSale(this.$route.params.uuid, objUpdated).then(() => {
+          adminProducts.deleteAllCart(this.user.uuid).then((res) => {
+            if (res.status === 200) {
+              this.$router.push({name: 'Bought', params: { uuid: this.$route.params.uuid }})
+            }
+            console.log(res)
+          })
+        })
+
       }
 
     }

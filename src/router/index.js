@@ -54,6 +54,12 @@ const routes = [
     meta: {isProtect : true}
   },
   {
+    path: '/compra-exitosa/:uuid',
+    name: 'Bought',
+    component: () => import('../views/bought.vue'),
+    meta: {isProtect : true}
+  },
+  {
     path: '/admin',
     name: 'Administrador',
     component: () => import('../views/admin/adminRouter.vue'),
@@ -84,7 +90,7 @@ const routes = [
     component: () => import('../views/detail.vue'),
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/:pathMatch(.*)/:pathMatch2(.*)?',
     name: 'NotFound',
     component: () => import('../views/notFound.vue'),
   },

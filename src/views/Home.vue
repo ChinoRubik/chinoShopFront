@@ -17,37 +17,52 @@
       <h1 class="text-3xl mb-2">Productos
 </h1>
       <div class="flex justify-evenly flex-wrap">
-        <vs-card type="2" v-for="item in products" :key="item.uuid" class="mb-8 col-12 col-lg-4">
-            <template #title>
-              <h3 class="font-bold">{{item.name}}</h3>
-            </template>
-            <template #img class="w-100">
-              <a :href="`detalle/${item.uuid}`"> <img :src="item.image" alt="image"></a>
-          
-            </template>
-            <template #text>
-              <p>
-                {{item.description}}
-              </p>
-            </template>
-            <template #interactions>
-              <div clasS="flex -rotate-45">
-                <span class="text-white bg-red-600 font-bold rounded-xl px-2 absolute flex isNew" v-if="item.is_new">
-                  <i class="fas fa-star text-yellow-400 mr-1 mt-1 leading-3"></i>
-                  <p class="">Nuevo</p>
-                </span>
-              </div>
+        <div v-for="(item, index) in products" :key="item.uuid" class="mb-8 col-12 col-lg-4">
+          <div class="text-center">
+            <b-spinner variant="primary" label="Spinning" v-show="!loadedImg[0] && !loadedImg[1] && !loadedImg[2]" class="mt-5"></b-spinner>
+          </div>
+          <div v-show="loadedImg[0] && loadedImg[0] && loadedImg[0]" :key="changed[0]">
+            <vs-card type="2" >
+              <template #title>
+                <h3 class="font-bold">{{item.name}}</h3>
+              </template>
+              <template #img class="w-100">
 
-              <div class="flex">
-                <vs-button danger icon>
-                  <i class="far fa-heart text-xl"></i>
-                </vs-button>
-                <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size)">
-                    <i class="fas fa-shopping-cart text-lg"></i>
-                </vs-button>
-              </div>
-            </template>
-      </vs-card>
+                  <a :href="`detalle/${item.uuid}`"> <img :src="item.image" alt="image" @load="onLoaded(index)" ></a>
+
+              </template>
+              <template #text>
+                  <div v-if="item.discount !== 0 && theresStock(item) !== 0" class="flex flex-wrap mb-4"> 
+                        <div class="w-100"><span class="font-bold" v-if="item.discount !== 0">${{ item.price - (item.price / 100) * item.discount}}.00</span> <del class="text-gray-300">${{item.price}}.00</del></div>
+                    </div>
+                    <span class="w-100 font-bold" v-if="item.discount === 0 && theresStock(item) !==0"> ${{item.price}}.00</span>
+              </template>
+              <template #interactions>
+                <div class="flex justify-between w-100">
+                  <div class="flex fle" >
+                    <span class="text-white bg-red-600 font-bold rounded-xl px-2 absolute -rotate-45 mt-4 ml-n1 block" v-if="item.is_new && theresStock(item) >= 1">
+                      <i class="fas fa-star text-yellow-400 mr-1 mt-1 leading-3"></i>
+                      Nuevo
+                    </span>
+                    <span class="text-white bg-black font-bold rounded-xl p-1 m-2 absolute flex" v-if="theresStock(item) === 0">
+                      Sin inventario
+                    </span>
+                  </div>
+        
+
+                  <div class="flex">
+                    <vs-button danger icon>
+                      <i class="far fa-heart text-xl"></i>
+                    </vs-button>
+                    <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size)" v-if="theresStock(item) >= 1">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                    </vs-button>
+                  </div>
+                </div>
+              </template>
+            </vs-card>
+          </div>
+        </div>
     </div>
 
 
@@ -69,6 +84,9 @@ export default {
       active: 'home',
       products: [],
       userData: {},
+      totalStock: 0,
+      loadedImg: [],
+      changed: false
     }
   },
 
@@ -77,6 +95,8 @@ export default {
   },
 
   created() {
+    
+
     adminProducts.getProducts().then((res) => {
       res.data.rows.map((item) => {
         adminProducts.getImages(item.uuid).then((res) => {
@@ -84,7 +104,13 @@ export default {
         });
         this.products.push(item)
       });
+      // this.products.map(() => {
+      //   this.loadedImg.push(false)
+      // })
     });
+
+
+
 
     if(this.token === null) {
       
@@ -103,6 +129,21 @@ export default {
 
   methods: {
     ...mapActions(['settingRoll', 'settingTotalAmount']),
+
+    theresStock(product) {
+      let stock = 0;
+      const my_split = product.stock.split('},')
+      for(var i = 0; i<my_split.length; i++) {
+        console.log(my_split[i])
+          if(my_split.length > 1 && i !== my_split.length-1 ) {
+              stock += parseInt(JSON.parse(my_split[i]+'}').stock);
+          } else{
+              stock += parseInt(JSON.parse(my_split[i]).stock);
+          }
+      }
+      console.log(stock, 'no hay stock')
+      return(stock)
+    },
 
     addToCart(product_uuid, sizes) {
 
@@ -189,7 +230,16 @@ export default {
 
     getSize(sizes) {
       return sizes.split(',')[0]
-    }
+    },
+
+    onLoaded(index) {
+
+      this.loadedImg[index] = true;
+      if(this.loadedImg[0] && this.loadedImg[1] && this.loadedImg[2]) {
+        this.changed = !this.changed;
+      }
+    },
+
   }
 }
 </script>
