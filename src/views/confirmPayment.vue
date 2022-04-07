@@ -124,6 +124,7 @@ export default {
     getProducts(data) {
       this.products = data;
     },
+
     submitted() {
       let selectedPayment = 0
       this.active.map((item) => {
@@ -142,48 +143,87 @@ export default {
         })
 
       } else {
+        this.products.map((product) => {
+          // Lógica Stock
+          adminProducts.getProduct(product.product_uuid).then((res) => { 
+            product.stock = res.data.rows[0].stock;
+            let stock = []
+            let isThereStock = false;
+            const my_split = product.stock.split('},')
+              for(var i = 0; i<my_split.length; i++) {
+                  if(my_split.length > 1 && i !== my_split.length-1 ) {
+                    stock.push(JSON.parse(my_split[i]+'}'))
+                  } else{
+                    stock.push(JSON.parse(my_split[i]))
+                  }
+              }
+            
+            stock.map((itemSecondary) => {
+              if(product.size === itemSecondary.size) {
+                if(parseInt(product.amount) > parseInt(itemSecondary.stock)) {
+                  isThereStock = false;
+                } else {
+                  isThereStock = true;
+                }
+              }
+            })
+            if(isThereStock) {
+              //THERE IS STOCK AND UPDATING MY STOCK 
+              let stock = []
+              const my_split = product.stock.split('},')
+              for(var x = 0; x<my_split.length; x++) {
+                if(my_split.length > 1 && x !== my_split.length-1 ) {
+                  stock.push(JSON.parse(my_split[x]+'}'))
+                } else{
+                  stock.push(JSON.parse(my_split[x]))
+                }
+              }
+              stock.map((itemStock) => {
+                if (itemStock.size === product.size) {
+                  itemStock.stock -= product.amount
+                }
+              })
+              let newStock = []
+              stock.map((item) => {
+                newStock.push(JSON.stringify(item))
+              })
+              const obj = {
+                stock: newStock.toString()
+              }
+              adminProducts.updateProduct(obj, product.product_uuid)
 
-        this.products.map((item) => {
-          console.log(item)
-          let stock = []
-          const my_split = item.stock.split('},')
-          for(var i = 0; i<my_split.length; i++) {
-            if(my_split.length > 1 && i !== my_split.length-1 ) {
-              stock.push(JSON.parse(my_split[i]+'}'))
-            } else{
-              stock.push(JSON.parse(my_split[i]))
-            }
-          }
-          stock.map((itemStock) => {
-            if (itemStock.size === item.size) {
-              itemStock.stock -= item.amount
-            }
-          })
-          let newStock  = []
-          stock.map((item) => {
-            newStock.push(JSON.stringify(item))
-          })
-          const obj = {
-            stock: newStock.toString()
-          }
-          adminProducts.updateProduct(obj, item.product_uuid)
-        })
-        const objUpdated = {
-          isDone: true,
-          total: this.total
-        } 
+              //UPDATING MY SALE NAD REDIRECTING TO BOUGHT
+              const objUpdated = {
+                isDone: true,
+                total: this.total
+              } 
+              adminProducts.updateSale(this.$route.params.uuid, objUpdated).then(() => {
+                adminProducts.deleteAllCart(this.user.uuid).then((res) => {
+                  if (res.status === 200) {
+                    this.$router.push({name: 'Bought', params: { uuid: this.$route.params.uuid }})
+                  }
+                })
+              })
 
-        adminProducts.updateSale(this.$route.params.uuid, objUpdated).then(() => {
-          adminProducts.deleteAllCart(this.user.uuid).then((res) => {
-            if (res.status === 200) {
-              this.$router.push({name: 'Bought', params: { uuid: this.$route.params.uuid }})
+            } else {
+              // THERE IS NO STOCK
+              this.$vs.notification({
+                icon: `<i class="fas fa-exclamation-circle"></i>`,
+                color: 'danger',
+                position: 'top-right',
+                title: '¡Ups, hubo un problema!',
+                text: `Realmente lo sentimos, nos quedamos sin stock para ${product.name} <br> :(`,
+                duration: 10000
+              });
+              this.$router.push({name: 'Carrito'})
             }
-            console.log(res)
           })
+
         })
+
 
       }
-
+      
     }
   },
 };

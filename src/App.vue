@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <div id="nav flex">
-      <div class="container mx-auto px-5 mb-16">
+      <div class="container mx-auto">
         <vs-navbar
           target-scroll="#padding-scroll-content"
           padding-scroll
           center-collapsed
           v-model="activeNav"
-          v-if="($route.path.split('/')[1] !== 'pagoInformacion') &&  ($route.path.split('/')[1] !== 'envioInformacion') && ($route.path.split('/')[1] !== 'pago')"
+          v-if="($route.path.split('/')[1] !== 'pagoInformacion') &&  ($route.path.split('/')[1] !== 'envioInformacion') && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')"
         >
           <template #left>
             <h1>ChinoShop</h1>
@@ -55,7 +55,7 @@
     </div>
     <router-view />  
 
-    <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago')">
+    <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')" >
       <div class="flex justify-between flex-wrap container mx-auto py-5">
         <div>
           <h4 class="mb-4">Redes sociales</h4>
