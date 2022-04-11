@@ -34,23 +34,41 @@
                     <span v-else >Precio: <strong class="block w-100 text-left mb-4"> ${{item.price}} MXM</strong></span>
                    <!-- <p class="leading-10">Precio: $ <span class="font-bold">{{item.price * item.amount}} MXM</span></p> -->
                    
-                    <vs-button danger flat @click.prevent="deleteFromCart(item.product_uuid, item.size)" class="buttonDelete">Quitar del carrito</vs-button>
+                    <vs-button danger flat @click="activeModalMethod(item)" class="buttonDelete">Quitar del carrito</vs-button>
 
                 </div>
             </template>
           </vs-card>
         
-          <div class=" text-right flex justify-end">
+          <div class=" text-right flex justify-end" v-show="showButtom">
             <div>
               <p class="font-bold">Sub total</p>
               <p>$ <span class="font-bold">{{getTotal()}}.00</span> MXM</p>
               <p>Costo de envío se muestran en el checkout</p>
               <p>El Importe final será cobrado en Pesos Mexicanos (MXN)</p>
-              <vs-button success @click="proccedPayment"   class="buttonSuccess float-right">Continuar</vs-button>
+              <vs-button success @click="proccedPayment" class="buttonSuccess float-right">Continuar</vs-button>
             </div>
           </div>
         </div>
     </div>
+    <vs-dialog width="200px" not-center v-model="activeModal">
+        <template #header>
+          <h4 class="not-margin">
+            Estas seguro que quieres eliminar del carrito a <strong>{{itemToDelete.name}}</strong>
+          </h4>
+        </template>
+
+        <template #footer>
+          <div class="con-footer">
+            <vs-button @click="deleteFromCart(itemToDelete.product_uuid, itemToDelete.size)"  success>
+              Si
+            </vs-button>
+            <vs-button @click="activeModal=false" danger>
+              No
+            </vs-button>
+          </div>
+        </template>
+    </vs-dialog>
   </div>
 </template>
 
@@ -71,15 +89,19 @@ export default {
           cartUpdated: [],
           imagesPath:[],
           products: [],
+          showButtom: false,
+          activeModal: false,
+          itemToDelete: {}
       }
   },
 
   computed: {
     ...mapState(["totalAmount","token"]),
   },
-
+  mounted() {
+  },
   created() {
-
+    const loading = this.$vs.loading()
     if(this.token === null) {
       console.log('no logueado')
       adminProducts.getProducts().then((res) => {
@@ -87,11 +109,13 @@ export default {
           this.products.push(item)
         });
       this.getCartPublic();
+      
       })
 
     } else {
       this.getUserData();
     }
+    loading.close();
   },
   
   methods: {
@@ -181,9 +205,12 @@ export default {
           })
         }
       }
+      this.showButtom = true;
     },
 
     deleteFromCart(product_uuid, size) {
+      this.activeModal = false;
+      const loading = this.$vs.loading()
 
       if(this.token === null) {
 
@@ -234,8 +261,8 @@ export default {
           }
         })
       }
+      loading.close()
     },
-    
     
     getCartNumber() {
       adminProducts.getCart(this.userData.uuid).then((res) => {
@@ -341,6 +368,11 @@ export default {
         }
       })
       return isThereStock;
+    },
+
+    activeModalMethod(item) {
+      this.activeModal = true;
+      this.itemToDelete = item;
     }
   },
 

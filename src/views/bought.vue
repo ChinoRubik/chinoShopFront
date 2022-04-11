@@ -17,7 +17,7 @@
                     <div class="ml-4">
                         <span class="font-bold text-left block">({{item.amount}}) {{item.name}}</span>
                         <span class="text-stone-500 text-left mt-2 block ">{{item.description}}</span>
-                        <span class="text-stone-500 text-left block">Talla {{item.size}}</span>
+                        <span class="text-stone-500 text-left block">Talla <strong>{{item.size}}</strong></span>
                     </div>
                 </div>
                 <b-button variant="primary mt-3" @click="$router.push({name: 'Home'})">Ir a Inicio</b-button>

@@ -17,18 +17,18 @@
       <h1 class="text-3xl mb-2">Productos
 </h1>
       <div class="flex justify-evenly flex-wrap">
-        <div v-for="(item, index) in products" :key="item.uuid" class="mb-8 col-12 col-lg-4">
-          <div class="text-center">
-            <b-spinner variant="primary" label="Spinning" v-show="!loadedImg[0] && !loadedImg[1] && !loadedImg[2]" class="mt-5"></b-spinner>
+        <div v-for="item, index in products" :key="item.uuid" class="mb-8 col-12 col-lg-4">
+          <div class="text-center" :ref="`spinner${index}`">
+            <b-spinner variant="primary" class="mt-5"></b-spinner>
           </div>
-          <div v-show="loadedImg[0] && loadedImg[0] && loadedImg[0]" :key="changed[0]">
-            <vs-card type="2" >
+          <div>
+            <vs-card type="2" :ref="`cartButton${item.uuid}`" class="hidden">
               <template #title>
                 <h3 class="font-bold">{{item.name}}</h3>
               </template>
               <template #img class="w-100">
 
-                  <a :href="`detalle/${item.uuid}`"> <img :src="item.image" alt="image" @load="onLoaded(index)" ></a>
+                  <a :href="`detalle/${item.uuid}`"> <img :src="item.image" alt="image" @load="onLoaded(index, `cartButton${item.uuid}`)"></a>
 
               </template>
               <template #text>
@@ -54,7 +54,7 @@
                     <vs-button danger icon>
                       <i class="far fa-heart text-xl"></i>
                     </vs-button>
-                    <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size)" v-if="theresStock(item) >= 1">
+                    <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size, `cartButton${item.uuid}`)" v-if="theresStock(item) >= 1">
                         <i class="fas fa-shopping-cart text-lg"></i>
                     </vs-button>
                   </div>
@@ -85,8 +85,6 @@ export default {
       products: [],
       userData: {},
       totalStock: 0,
-      loadedImg: [],
-      changed: false
     }
   },
 
@@ -95,8 +93,6 @@ export default {
   },
 
   created() {
-    
-
     adminProducts.getProducts().then((res) => {
       res.data.rows.map((item) => {
         adminProducts.getImages(item.uuid).then((res) => {
@@ -104,13 +100,7 @@ export default {
         });
         this.products.push(item)
       });
-      // this.products.map(() => {
-      //   this.loadedImg.push(false)
-      // })
     });
-
-
-
 
     if(this.token === null) {
       
@@ -125,6 +115,7 @@ export default {
         this.getCart()
       });
     }
+    
   },
 
   methods: {
@@ -134,19 +125,25 @@ export default {
       let stock = 0;
       const my_split = product.stock.split('},')
       for(var i = 0; i<my_split.length; i++) {
-        console.log(my_split[i])
+        // console.log(my_split[i])
           if(my_split.length > 1 && i !== my_split.length-1 ) {
               stock += parseInt(JSON.parse(my_split[i]+'}').stock);
           } else{
               stock += parseInt(JSON.parse(my_split[i]).stock);
           }
       }
-      console.log(stock, 'no hay stock')
+      // console.log(stock, 'no hay stock')
       return(stock)
     },
 
-    addToCart(product_uuid, sizes) {
-
+    addToCart(product_uuid, sizes, ref) {
+      const loading = this.$vs.loading({
+        target: this.$refs[ref][0],
+        scale: 1.5,
+        type: 'circles',
+        color: '#fff',
+      })
+      
       if(this.token === null) {
         const obj = {
           product_uuid: product_uuid,
@@ -164,33 +161,34 @@ export default {
         })
         this.getCartPublic()
       } else {
-      const obj = {
-        size: this.getSize(sizes),
-        product_uuid: product_uuid,
-        user_uuid: this.userData.uuid
-      }
-      adminProducts.addToCart(obj).then((res) => {
-        if(res.status === 200) {
-          this.$vs.notification({
-              color: 'success',
-              position: 'buttom-right',
-              title:'Producto agregado',
-              text: 'El producto ha sido agregado al carrito'
-          })
-
-          this.getCart();
-        } else {
-          this.$vs.notification({
-              color: 'danger',
-              position: 'buttom-right',
-              title:'Error',
-              text: 'Hubo un error al agregar al carrito'
-          })
+        const obj = {
+          size: this.getSize(sizes),
+          product_uuid: product_uuid,
+          user_uuid: this.userData.uuid
         }
-      });
+        adminProducts.addToCart(obj).then((res) => {
+          if(res.status === 200) {
+            this.$vs.notification({
+                color: 'success',
+                position: 'buttom-right',
+                title:'Producto agregado',
+                text: 'El producto ha sido agregado al carrito'
+            })
+
+            this.getCart();
+          } else {
+            this.$vs.notification({
+                color: 'danger',
+                position: 'buttom-right',
+                title:'Error',
+                text: 'Hubo un error al agregar al carrito'
+            })
+          }
+        });
       }
-
-
+      setTimeout(() => {
+        loading.close()
+      }, 500)
     },
 
     getCart() {
@@ -232,14 +230,10 @@ export default {
       return sizes.split(',')[0]
     },
 
-    onLoaded(index) {
-
-      this.loadedImg[index] = true;
-      if(this.loadedImg[0] && this.loadedImg[1] && this.loadedImg[2]) {
-        this.changed = !this.changed;
-      }
+    onLoaded(indexSpinner, indexCard) {
+      this.$refs[`spinner${indexSpinner}`][0].classList.add('hidden')
+      this.$refs[indexCard][0].$el.classList.remove('hidden')
     },
-
   }
 }
 </script>

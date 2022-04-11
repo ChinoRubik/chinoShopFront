@@ -143,6 +143,8 @@ export default {
         })
 
       } else {
+        const loading = this.$vs.loading()
+
         this.products.map((product) => {
           // Lógica Stock
           adminProducts.getProduct(product.product_uuid).then((res) => { 
@@ -200,6 +202,7 @@ export default {
               adminProducts.updateSale(this.$route.params.uuid, objUpdated).then(() => {
                 adminProducts.deleteAllCart(this.user.uuid).then((res) => {
                   if (res.status === 200) {
+                    loading.close()
                     this.$router.push({name: 'Bought', params: { uuid: this.$route.params.uuid }})
                   }
                 })
@@ -215,6 +218,7 @@ export default {
                 text: `Realmente lo sentimos, nos quedamos sin stock para ${product.name} <br> :(`,
                 duration: 10000
               });
+              loading.close()
               this.$router.push({name: 'Carrito'})
             }
           })

@@ -53,7 +53,7 @@
 
      
     </div>
-    <router-view />  
+    <router-view class="routerView"/>  
 
     <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')" >
       <div class="flex justify-between flex-wrap container mx-auto py-5">
@@ -172,6 +172,10 @@ body {
   transform: scale(1.2);
   transition: all 500ms;
   color: #026299;
+}
+
+.routerView {
+  min-height: 600px;
 }
 
 </style>
