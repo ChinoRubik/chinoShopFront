@@ -48,11 +48,10 @@
                       Sin inventario
                     </span>
                   </div>
-        
-
                   <div class="flex">
-                    <vs-button danger icon>
-                      <i class="far fa-heart text-xl"></i>
+                    <vs-button danger icon @click="toggleFavorite(item.uuid, userData.uuid)" :key="changed">
+                      <i class="fas fa-heart text-xl" v-if="item.isFavorite"></i>
+                      <i class="far fa-heart text-xl" v-if="!item.isFavorite"></i>
                     </vs-button>
                     <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size, `cartButton${item.uuid}`)" v-if="theresStock(item) >= 1">
                         <i class="fas fa-shopping-cart text-lg"></i>
@@ -61,7 +60,7 @@
                 </div>
               </template>
             </vs-card>
-          </div>
+          </div>                              
         </div>
     </div>
 
@@ -85,6 +84,7 @@ export default {
       products: [],
       userData: {},
       totalStock: 0,
+      changed: false
     }
   },
 
@@ -112,7 +112,8 @@ export default {
         this.userData = res.data.data.user;
         this.settingRoll(res.data.data.user.roll);
         this.addToCartPrevent();
-        this.getCart()
+        this.getCart();
+        this.getFavorites();
       });
     }
     
@@ -234,6 +235,54 @@ export default {
       this.$refs[`spinner${indexSpinner}`][0].classList.add('hidden')
       this.$refs[indexCard][0].$el.classList.remove('hidden')
     },
+
+    getFavorites() {
+      adminProducts.getFavorites(this.userData.uuid).then((res) => {
+        res.data.rows.map((item) => {
+          this.products.map((product) => {
+            if (product.uuid === item.product_uuid) {
+              product.isFavorite = true
+              this.changed = !this.changed
+            }
+          })
+        })
+      })
+    },
+
+    toggleFavorite(product_uuid, user_uuid) {
+      let existsLike = false
+      let uuid = ''
+      adminProducts.getFavorites(user_uuid).then((res) => {
+        res.data.rows.map((item) =>  {
+          if (item.product_uuid === product_uuid) {
+            existsLike = true
+            uuid = item.uuid
+          }
+        });
+
+        if (existsLike) {
+          this.products.map((product) => {
+            if (product.uuid === product_uuid) {
+              product.isFavorite = false
+              this.changed = !this.changed
+            }
+          });            
+          adminProducts.deleteFromFavorites(uuid).then(() => {})
+        } else {
+          const obj = {
+            user_uuid: user_uuid,
+            product_uuid: product_uuid
+          }
+          this.products.map((product) => {
+            if (product.uuid === product_uuid) {
+              product.isFavorite = true
+              this.changed = !this.changed
+            }
+          });
+          adminProducts.addToFavorites(obj).then(() => {})
+        }
+      })
+    }
   }
 }
 </script>

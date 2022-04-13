@@ -261,4 +261,39 @@ export default {
             return error.response
         });
     },
+
+    addToFavorites(data) {
+        return axios.post(`${config.api_route}dashboard/addToFavorites`,
+        data,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    getFavorites(user_uuid) {
+        return axios.get(`${config.api_route}dashboard/getFavorites/${user_uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    deleteFromFavorites(uuid) {
+        return axios.delete(`${config.api_route}dashboard/deleteFromFavorites/${uuid}`,
+        {headers: { 'auth-token' : store.state.token ,
+        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
 }

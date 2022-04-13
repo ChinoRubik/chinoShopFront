@@ -1,6 +1,6 @@
 <template>
   <div class="w-2/3 container mx-auto mt-32 ">
-    <div class="flex ">  
+    <div class="flex" v-if="loaded">  
         <div class="w-2/6">
             <carousel class="carousel " :perPage="1" >
             <slide v-for="item in images" :key="item"> <img :src="item" class="slide rounded-xl shadow-xl mx-5 mb-10" /></slide>
@@ -96,6 +96,7 @@ export default {
           stock: [],
           totalStock: 0,
           isThereStockForSize: true,
+          loaded: false
       }
   },
 
@@ -125,6 +126,7 @@ export default {
       ...mapActions(['settingTotalAmount']),
 
       getProduct() {
+        const loading = this.$vs.loading();
         adminProducts.getProduct(this.$route.params.uuid).then((res) => {
           if(res.data.rows.length === 0) {
             this.$router.push({name: 'NotFound', params:{pathMatch2: this.$route.params.uuid, pathMatch: 'detalle'}})
@@ -139,6 +141,10 @@ export default {
         adminProducts.getCategories().then((res) => {
             this.categories = res.data.rows;
         });
+        setTimeout(() => {
+          loading.close()
+          this.loaded = true;
+        }, 350)
       },
 
       getImages(uuid) {
