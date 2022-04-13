@@ -31,6 +31,12 @@ const routes = [
   meta: {isProtect : true}
   },
   {
+    path: '/favoritos',
+    name: 'Favoritos',
+    component: () => import('../views/favorites.vue'),
+    meta: {isProtect : true}
+  },
+  {
     path: '/carrito',
     name: 'Carrito',
     component: () => import('../views/cart.vue'),

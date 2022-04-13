@@ -7,10 +7,14 @@
             </carousel>
         </div>
         <div class="bg-white w-4/6 px-10 py-2 rounded-xl shadow-lg">
-            <div><i class="fas fa-times-circle text-red-500 text-2xl hover:text-red-700 block float-right cursor-pointer" @click="showConfirm=true" v-if="roll === 'admin'"></i>
+            <div :key="changed">
+              <i class="far fa-heart text-2xl text-blue-500 cursor-pointer float-right ml-3" v-if="!product.isFavorite" @click="toggleFavorite(product.uuid, userData.uuid)"></i>
+              <i class="fas fa-heart text-2xl text-blue-500 cursor-pointer float-right ml-3 hover:text-blue-600" v-if="product.isFavorite" @click="toggleFavorite(product.uuid, userData.uuid)"></i>
+            </div>   
+            <div>
+              <i class="fas fa-times-circle text-red-500 text-2xl hover:text-red-700 block float-right cursor-pointer" @click="showConfirm=true" v-if="roll === 'admin'"></i>
               <i class="fas fa-edit text-yellow-500 text-2xl hover:text-yellow-700 cursor-pointer float-right mr-3" @click="updateProduct(product.uuid)" v-if="roll === 'admin'"></i>
-            </div>
-
+            </div>     
             <h2 class="font-bold text-2xl text-left">{{product.name}}</h2>
             <p class="text-left text-gray-500 mb-4 text-md"> {{ getCategory(product.category_uuid) }}</p>
             <div v-if="(totalStock !== 0)">
@@ -96,7 +100,8 @@ export default {
           stock: [],
           totalStock: 0,
           isThereStockForSize: true,
-          loaded: false
+          loaded: false,
+          changed: false
       }
   },
 
@@ -118,6 +123,7 @@ export default {
     } else {
       serviceAuth.dashboard().then(res => {
       this.userData = res.data.data.user;
+      this.getFavorites();
       });
     }
   },
@@ -288,6 +294,63 @@ export default {
             }
         return totalStock;
       },
+
+      getFavorites() {
+        adminProducts.getFavorites(this.userData.uuid).then((res) => {
+          res.data.rows.map((item) => {
+            if (this.product.uuid === item.product_uuid) {
+              this.product.isFavorite = true
+              this.changed = !this.changed
+            }
+          })
+        })
+      },
+
+      toggleFavorite(product_uuid, user_uuid) {
+
+        if (this.token === null) {
+          this.$vs.notification({
+              icon: `<i class="fas fa-sign-in-alt"></i>`,
+              color: 'warn',
+              position: 'top-right',
+              title: 'Ojo',
+              text: `Inicia sesión para agregar a favoritos`,
+              classNotification: 'notificationWarn',
+              duration: 10000
+
+          });
+          this.$router.push({name:'Login'});
+        } else {
+          let existsLike = false
+          let uuid = ''
+          adminProducts.getFavorites(user_uuid).then((res) => {
+            res.data.rows.map((item) =>  {
+              if (item.product_uuid === product_uuid) {
+                existsLike = true
+                uuid = item.uuid
+              }
+            });
+
+            if (existsLike) {
+              if (this.product.uuid === product_uuid) {
+                this.product.isFavorite = false
+                this.changed = !this.changed
+              }
+              adminProducts.deleteFromFavorites(uuid).then(() => {})
+            } else {
+              const obj = {
+                user_uuid: user_uuid,
+                product_uuid: product_uuid
+              }
+              if (this.product.uuid === product_uuid) {
+                this.product.isFavorite = true
+                this.changed = !this.changed
+              }
+              adminProducts.addToFavorites(obj).then(() => {})
+            }
+          });
+        }
+      }
 
       // capitalize(word) {
       //   console.log(word)

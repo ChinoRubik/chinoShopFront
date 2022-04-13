@@ -250,38 +250,52 @@ export default {
     },
 
     toggleFavorite(product_uuid, user_uuid) {
-      let existsLike = false
-      let uuid = ''
-      adminProducts.getFavorites(user_uuid).then((res) => {
-        res.data.rows.map((item) =>  {
-          if (item.product_uuid === product_uuid) {
-            existsLike = true
-            uuid = item.uuid
-          }
-        });
 
-        if (existsLike) {
-          this.products.map((product) => {
-            if (product.uuid === product_uuid) {
-              product.isFavorite = false
-              this.changed = !this.changed
-            }
-          });            
-          adminProducts.deleteFromFavorites(uuid).then(() => {})
-        } else {
-          const obj = {
-            user_uuid: user_uuid,
-            product_uuid: product_uuid
-          }
-          this.products.map((product) => {
-            if (product.uuid === product_uuid) {
-              product.isFavorite = true
-              this.changed = !this.changed
+      if (this.token === null) {
+        this.$vs.notification({
+            icon: `<i class="fas fa-sign-in-alt"></i>`,
+            color: 'warn',
+            position: 'top-right',
+            title: 'Ojo',
+            text: `Inicia sesión para agregar a favoritos`,
+            classNotification: 'notificationWarn',
+            duration: 10000
+        });
+        this.$router.push({name:'Login'});
+      } else {
+        let existsLike = false
+        let uuid = ''
+        adminProducts.getFavorites(user_uuid).then((res) => {
+          res.data.rows.map((item) =>  {
+            if (item.product_uuid === product_uuid) {
+              existsLike = true
+              uuid = item.uuid
             }
           });
-          adminProducts.addToFavorites(obj).then(() => {})
-        }
-      })
+
+          if (existsLike) {
+            this.products.map((product) => {
+              if (product.uuid === product_uuid) {
+                product.isFavorite = false
+                this.changed = !this.changed
+              }
+            });            
+            adminProducts.deleteFromFavorites(uuid).then(() => {})
+          } else {
+            const obj = {
+              user_uuid: user_uuid,
+              product_uuid: product_uuid
+            }
+            this.products.map((product) => {
+              if (product.uuid === product_uuid) {
+                product.isFavorite = true
+                this.changed = !this.changed
+              }
+            });
+            adminProducts.addToFavorites(obj).then(() => {})
+          }
+        });
+      }
     }
   }
 }

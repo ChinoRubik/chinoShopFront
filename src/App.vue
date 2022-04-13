@@ -39,10 +39,10 @@
                   <span class="bg-black font-bold text-white spanNumber rounded text-sm" >{{totalAmount}}</span>
                 <img src="./assets/shopping-cart.png" class="w-8 mr-14" v-if="token"/>
                 <img src="./assets/shopping-cart.png" class="w-8 mr-14" v-else/>
-
               </a>  
             </div>                          
             <a href="/configuracion" class="mr-10" v-if="token"> <i class="fas fa-user text-3xl"></i></a>
+            <router-link :to="{name: 'Favoritos'}" class="mr-10" v-if="token"> Fav</router-link>
             <vs-button success flat @click="redirect" v-if="!token">Sign in</vs-button>
             <vs-button  flat @click="logout" class="" v-if="token">Log out</vs-button>
           </template>
@@ -53,7 +53,9 @@
 
      
     </div>
-    <router-view class="routerView"/>  
+    <div class="routerView">
+          <router-view/>  
+    </div>
 
     <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')" >
       <div class="flex justify-between flex-wrap container mx-auto py-5">
@@ -175,7 +177,7 @@ body {
 }
 
 .routerView {
-  min-height: 600px;
+  min-height: 650px !important;
 }
 
 </style>

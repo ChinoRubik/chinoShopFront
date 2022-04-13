@@ -12,8 +12,9 @@
                 <img :src="item.image" alt="image" >
             </template>
             <template #interactions>
-                <vs-button danger icon>
-                    <i class='bx bx-heart'></i>
+              <vs-button danger icon @click="toggleFavorite(item.product_uuid, userData.uuid)" :key="changed">
+                  <i class="fas fa-heart text-xl" v-if="item.isFavorite"></i>
+                  <i class="far fa-heart text-xl" v-if="!item.isFavorite"></i>
                 </vs-button>
             </template>
             <template #title>
@@ -76,13 +77,10 @@
 import { mapState, mapActions } from "vuex";
 import serviceAuth from '../services/auth';
 import adminProducts from '../services/adminProducts'
-import config from '../services/config'
-
 
 export default {
   data() {
       return {
-          config,
           userData: {},
           cart: [],
           xd: [],
@@ -91,7 +89,8 @@ export default {
           products: [],
           showButtom: false,
           activeModal: false,
-          itemToDelete: {}
+          itemToDelete: {},
+          changed: false
       }
   },
 
@@ -137,7 +136,8 @@ export default {
               item.image = res.data.rows[0].url
           });
         })  
-        this.concateProducts()
+        this.concateProducts();
+        this.getFavorites();
         });
     },
 
@@ -373,6 +373,69 @@ export default {
     activeModalMethod(item) {
       this.activeModal = true;
       this.itemToDelete = item;
+    },
+
+    getFavorites() {
+      adminProducts.getFavorites(this.userData.uuid).then((res) => {
+        res.data.rows.map((item) => {
+          this.cartUpdated.map((product) => {
+            if (product.product_uuid === item.product_uuid) {
+              product.isFavorite = true
+              this.changed = !this.changed
+            }
+          })
+        })
+      })
+    },
+
+    toggleFavorite(product_uuid, user_uuid) {
+
+      if (this.token === null) {
+        this.$vs.notification({
+            icon: `<i class="fas fa-sign-in-alt"></i>`,
+            color: 'warn',
+            position: 'top-right',
+            title: 'Ojo',
+            text: `Inicia sesión para agregar a favoritos`,
+            classNotification: 'notificationWarn',
+            duration: 10000
+
+        });
+        this.$router.push({name:'Login'});
+      } else {
+        let existsLike = false
+        let uuid = ''
+        adminProducts.getFavorites(user_uuid).then((res) => {
+          res.data.rows.map((item) =>  {
+            if (item.product_uuid === product_uuid) {
+              existsLike = true
+              uuid = item.uuid
+            }
+          });
+
+          if (existsLike) {
+            this.cartUpdated.map((product) => {
+              if (product.product_uuid === product_uuid) {
+                product.isFavorite = false
+                this.changed = !this.changed
+              }
+            });            
+            adminProducts.deleteFromFavorites(uuid).then(() => {})
+          } else {
+            const obj = {
+              user_uuid: user_uuid,
+              product_uuid: product_uuid
+            }
+            this.cartUpdated.map((product) => {
+              if (product.product_uuid === product_uuid) {
+                product.isFavorite = true
+                this.changed = !this.changed
+              }
+            });
+            adminProducts.addToFavorites(obj).then(() => {})
+          }
+        });
+      }
     }
   },
 
