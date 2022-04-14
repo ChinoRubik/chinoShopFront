@@ -98,58 +98,124 @@ export default {
         },
 
         submitted() {
-            
-            for(var i=0; i< this.product.size.length; i++) {
-                const obj = {size: this.product.size[i], stock: this.stockSelected[i]};
-                this.stockSelected[i] = JSON.stringify(obj);
-            }
-            this.product.category_uuid = this.product.category_uuid.value;
-            this.product.size = this.product.size.toString();
-            this.product.stock = this.stockSelected.toString();
 
-            if(this.updateProduct) {
-                adminProducts.updateProduct(this.product, this.$route.params.uuid).then((res) => {
-                    if (res.status ===200) {
-                        this.product = new Product('','','','','',false,'','','')
-                        this.$router.push({name: 'Home'})
-                        this.$vs.notification({
-                            color: 'success',
-                            position: 'top-right',
-                            title:'Producto actualizado',
-                            text: 'El producto ha sido actualizado correctamente'
-                        })
-                    }
-                    this.$router.push({name: 'Detalle', params: { uuid: this.$route.params.uuid }})
+            console.log(this.product)
+            if (this.product.name === '' || this.product.name === null) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'El nombre es requerido'
                 });
-
+            } else if (this.product.price === '' || this.product.price === null) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'El precio es requerido'
+                }); 
+            } else if (this.product.category_uuid === '' || this.product.category_uuid === null) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'La categoría es requerida'
+                }); 
+            } else if (this.product.description === '' || this.product.description === null) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'La descripción es requerida'
+                }); 
+            } else if (this.product.size === '' || this.product.size === null) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'La talla es requerida'
+                }); 
+            } else if (this.product.discount === '' || this.product.discount === null) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'El descuento es requerido'
+                }); 
+            } else if (this.$refs.myFile.files.length === 0 && !this.updateProduct) {
+                this.$vs.notification({
+                    icon: '<i class="fas fa-times-circle"></i>',
+                    color: 'danger',
+                    position: 'top-right',
+                    title:'Requerido',
+                    text: 'Es necesario subir una imagen'
+                }); 
             } else {
-
-                var file = this.$refs.myFile.files;
-                const form  = new FormData();
-                for(var j = 0; j < file.length ; j++) {
-                    form.append('image',file[j],file[j].name)
-                }
-                form.append('price', this.product.price)
-                form.append('description', this.product.description)
-                form.append('size', this.product.size)
-                form.append('is_new', this.product.is_new)
-                form.append('discount', this.product.discount)
-                form.append('stock', this.product.stock)
-                form.append('category_uuid', this.product.category_uuid)
-                form.append('name', this.product.name)
-
-                adminProducts.addProduct(form).then((res) => {
-                    if (res.status ===200) {
-                        this.product = new Product('','','','','',false,'','','')
-                        this.$router.push({name: 'Home'})
-                        this.$vs.notification({
-                            color: 'success',
-                            position: 'top-right',
-                            title:'Producto agregado',
-                            text: 'El producto ha sido agregado correctamente'
-                        })
+                for(var i=0; i< this.product.size.length; i++) {
+                    if (this.stockSelected[i] === undefined) {
+                        this.stockSelected[i] = 0;
                     }
-                });
+                    const obj = {size: this.product.size[i], stock: this.stockSelected[i]};
+                    this.stockSelected[i] = JSON.stringify(obj);
+                }
+                this.product.category_uuid = this.product.category_uuid.value;
+                this.product.size = this.product.size.toString();
+                this.product.stock = this.stockSelected.toString();
+                this.product.is_new === false ? this.product.is_new = 0 : this.product.is_new = 1
+
+                const loading = this.$vs.loading()
+                if (this.updateProduct) {
+                    adminProducts.updateProduct(this.product, this.$route.params.uuid).then((res) => {
+                        if (res.status ===200) {
+                            this.product = new Product('','','','','',false,'','','')
+                            this.$router.push({name: 'Home'})
+                            this.$vs.notification({
+                                color: 'success',
+                                position: 'top-right',
+                                title:'Producto actualizado',
+                                text: 'El producto ha sido actualizado correctamente'
+                            })
+                        }
+                        loading.close();
+                        this.$router.push({name: 'Detalle', params: { uuid: this.$route.params.uuid }})
+                    });
+
+                } else {
+
+                    var file = this.$refs.myFile.files;
+                    const form  = new FormData();
+                    for(var j = 0; j < file.length ; j++) {
+                        form.append('image',file[j],file[j].name)
+                    }
+                    form.append('price', this.product.price)
+                    form.append('description', this.product.description)
+                    form.append('size', this.product.size)
+                    form.append('is_new', this.product.is_new)
+                    form.append('discount', this.product.discount)
+                    form.append('stock', this.product.stock)
+                    form.append('category_uuid', this.product.category_uuid)
+                    form.append('name', this.product.name)
+                    adminProducts.addProduct(form).then((res) => {
+                        if (res.status ===200) {
+                            this.product = new Product('','','','','',false,'','','')
+                            this.$router.push({name: 'Home'})
+                            this.$vs.notification({
+                                color: 'success',
+                                position: 'top-right',
+                                title:'Producto agregado',
+                                text: 'El producto ha sido agregado correctamente'
+                            })
+                        }
+                        loading.close();
+                    });
+                }
+            
             }
         },
 
