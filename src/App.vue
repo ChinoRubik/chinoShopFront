@@ -15,8 +15,8 @@
           <!-- <vs-navbar-item :active="activeNav == 'home'" id="home"> -->
             <!-- <router-link :to="{name: 'Home'}" class="mx-5">Home</router-link> -->
             <router-link :to="{name: 'Home'}" custom v-slot="{ navigate }">
-              <i class="fa fa-home mr-2 text-xl"></i>
-              <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer">Home</span>
+              <i class="fa fa-home mr-2 text-2xl"></i>
+              <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer text-xl">Home</span>
           </router-link>
           <!-- </vs-navbar-item> -->
           <!-- <vs-navbar-item :active="activeNav == 'docs'" id="docs">
