@@ -15,6 +15,7 @@
           <!-- <vs-navbar-item :active="activeNav == 'home'" id="home"> -->
             <!-- <router-link :to="{name: 'Home'}" class="mx-5">Home</router-link> -->
             <router-link :to="{name: 'Home'}" custom v-slot="{ navigate }">
+              <i class="fa fa-home mr-2 text-xl"></i>
               <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer">Home</span>
           </router-link>
           <!-- </vs-navbar-item> -->
@@ -29,22 +30,40 @@
           </vs-navbar-item> -->
           <!-- <vs-navbar-item :active="activeNav == 'administrador'" id="administrador"  v-if="roll === 'admin'"> -->
           <!-- <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" > Administrador</router-link> -->
-          <router-link :to="{name: 'Administrador'}" custom v-slot="{ navigate }" v-if="roll === 'admin'" >
-              <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer">Administrador</span>
+          <router-link :to="{name: 'Administrador'}" custom v-slot="{ navigate }" v-if="roll === 'admin'" class="mt-1" >
+             <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer">Administrador</span>
           </router-link>
-          <!-- </vs-navbar-item> -->
           <template #right class="">
             <div class="">
               <a href="/carrito"> 
                   <span class="bg-black font-bold text-white spanNumber rounded text-sm" >{{totalAmount}}</span>
-                <img src="./assets/shopping-cart.png" class="w-8 mr-14" v-if="token"/>
-                <img src="./assets/shopping-cart.png" class="w-8 mr-14" v-else/>
+                <img src="./assets/shopping-cart.png" class="w-8 mr-3" v-if="token"/>
+                <img src="./assets/shopping-cart.png" class="w-8 mr-3" v-else/>
               </a>  
             </div>                          
-            <a href="/configuracion" class="mr-10" v-if="token"> <i class="fas fa-user text-3xl"></i></a>
-            <router-link :to="{name: 'Favoritos'}" class="mr-10" v-if="token"> Fav</router-link>
-            <vs-button success flat @click="redirect" v-if="!token">Sign in</vs-button>
-            <vs-button  flat @click="logout" class="" v-if="token">Log out</vs-button>
+            <div>
+              <b-dropdown no-caret variant="link" toggle-class="text-decoration-none" right>
+                <template #button-content>
+                  <i class="fas fa-bars text-3xl text-gray-700"></i>
+                </template>
+                <b-dropdown-item :to="{name: 'Configuracion'}" v-if="token">
+                 <i class="fas fa-user text-lg mr-2 text-gray-500"></i>
+                  Configuración
+                  </b-dropdown-item>
+                <b-dropdown-item :to="{name: 'Favoritos'}" v-if="token">
+                  <i class="fas fa-heart text-lg mr-2 text-gray-500"></i>
+                  Favoritos
+                </b-dropdown-item>
+                <b-dropdown-item @click="logout" v-if="token">
+                 <i class="fa fa-sign-out text-lg mr-2 text-gray-500"></i>
+                  Log out
+                </b-dropdown-item>
+                <b-dropdown-item  @click="redirect" v-if="!token">
+                  <i class="fa fa-sign-in text-lg mr-2 text-gray-500"></i>
+                  Sign in
+                </b-dropdown-item>
+              </b-dropdown>
+            </div>
           </template>
         </vs-navbar>
       
@@ -150,10 +169,8 @@ body {
   padding-right: 4px;
   padding-top:1px ;
   padding-bottom:1px ;
-
   position: absolute;
-  top: -2px;
-  
+  top: 2px;
 }
 
 .footer{
