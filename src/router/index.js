@@ -112,11 +112,11 @@ router.beforeEach((to, from, next) => {
   const isProtected = to.matched.some(item => item.meta.isProtect);
 
   if(isProtected && store.state.token === null ) {
-    next({name:'Home'}) // pagina no existe
+    next({name:'NotFound'}) // pagina no existe
   }  else {
     const isAdmin = to.matched.some(item => item.meta.isAdmin);
       if (isAdmin  && store.state.roll  === 'user') {
-        next({name:'Home'}) // PAGINA DE NO EXISTE
+        next({name:'NotFound'}) // PAGINA DE NO EXISTE
       } else {
         next()
       }    
