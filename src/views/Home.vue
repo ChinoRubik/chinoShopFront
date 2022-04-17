@@ -53,7 +53,7 @@
                       <i class="fas fa-heart text-xl" v-if="item.isFavorite"></i>
                       <i class="far fa-heart text-xl" v-if="!item.isFavorite"></i>
                     </vs-button>
-                    <vs-button class="btn-chat" shadow primary @click="addToCart(item.uuid, item.size, `cartButton${item.uuid}`)" v-if="theresStock(item) >= 1">
+                    <vs-button class="btn-chat" shadow primary @click="addToCart(item, `cartButton${item.uuid}`)" v-if="theresStock(item) >= 1">
                         <i class="fas fa-shopping-cart text-lg"></i>
                     </vs-button>
                   </div>
@@ -137,19 +137,18 @@ export default {
       return(stock)
     },
 
-    addToCart(product_uuid, sizes, ref) {
+    addToCart(product, ref) {
       const loading = this.$vs.loading({
         target: this.$refs[ref][0],
         scale: 1.5,
         type: 'circles',
         color: '#fff',
       })
-      
       if(this.token === null) {
         const obj = {
-          product_uuid: product_uuid,
+          product_uuid: product.uuid,
           amount: 1,
-          size: this.getSize(sizes)
+          size: this.getSizeAvaible(product)
         }
         let list = JSON.parse(localStorage.getItem('cartTemp'))
         list.push(obj)
@@ -163,8 +162,8 @@ export default {
         this.getCartPublic()
       } else {
         const obj = {
-          size: this.getSize(sizes),
-          product_uuid: product_uuid,
+          size: this.getSizeAvaible(product),
+          product_uuid: product.uuid,
           user_uuid: this.userData.uuid
         }
         adminProducts.addToCart(obj).then((res) => {
@@ -227,8 +226,24 @@ export default {
       localStorage.removeItem('cartTemp')
     },
 
-    getSize(sizes) {
-      return sizes.split(',')[0]
+    getSizeAvaible(product) {
+      const stock = []
+      const my_split = product.stock.split('},')
+      for(var i = 0; i<my_split.length; i++) {
+          if(my_split.length > 1 && i !== my_split.length-1 ) {
+              stock.push(JSON.parse(my_split[i]+'}'));
+          } else{
+              stock.push(JSON.parse(my_split[i]));
+          }
+      }
+      let sizeToReturn = ''
+      for (var j = 0; j < stock.length; j++) {
+        if(parseInt(stock[j].stock) !== 0) {
+          sizeToReturn = stock[j].size;
+          break;
+        }
+      }
+      return sizeToReturn
     },
 
     onLoaded(indexSpinner, indexCard) {
