@@ -23,7 +23,10 @@
  
             <template #text>
                 <div class="flex justify-between mt-10">
-                   <p class="leading-10">Talla: <span class="font-bold">{{item.size}}</span></p>
+                  <div>
+                    <span class="leading-10">Talla:</span>
+                    <v-select v-model="item.size" :options="getSizesAvaible(item)" />
+                  </div>
                    <div class="flex ">
                         <p class="leading-10">Cantidad:</p>
                         <vs-input v-model="item.amount" type="number" class="ml-4 inputNumber" min="1"/>
@@ -77,6 +80,7 @@
 import { mapState, mapActions } from "vuex";
 import serviceAuth from '../services/auth';
 import adminProducts from '../services/adminProducts'
+import vSelect from 'vue-select'
 
 export default {
   data() {
@@ -90,15 +94,18 @@ export default {
           showButtom: false,
           activeModal: false,
           itemToDelete: {},
-          changed: false
+          changed: false,
+          loadedPage: []
       }
+  },
+  components: {
+    vSelect
   },
 
   computed: {
     ...mapState(["totalAmount","token"]),
   },
-  mounted() {
-  },
+
   created() {
     const loading = this.$vs.loading()
     if(this.token === null) {
@@ -116,7 +123,6 @@ export default {
     }
     loading.close();
   },
-  
   methods: {
 
     ...mapActions(['settingTotalAmount']),
@@ -436,8 +442,40 @@ export default {
           }
         });
       }
+    },
+
+    getSizesAvaible(item) {
+      const sizes = []
+      const my_split = item.stock.split('},')
+        for(var i = 0; i<my_split.length; i++) {
+            if(my_split.length > 1 && i !== my_split.length-1 ) {
+              if(parseInt(JSON.parse(my_split[i]+'}').stock) !== 0) {
+                sizes.push(JSON.parse(my_split[i]+'}').size)
+              }
+            } else {
+              if(parseInt(JSON.parse(my_split[i]).stock) !== 0) {
+                sizes.push(JSON.parse(my_split[i]).size)
+              }
+            }
+        }
+      return sizes
     }
-  },
+  }
+
+  // watch: {
+  //   cartUpdated: {
+  //     handler: function (val) {
+  //       console.log('a thing changed' , val, 'this is old', this.loadedPage)
+
+  //       if (val === this.loadedPage) {
+  //         console.log('somos iguales')
+  //       } else {
+  //         console.log('no somos iguales')
+  //       }
+  //       this.loadedPage = Object.values(val)
+  //     },
+  //     deep: true
+  //   }
 
 }
 </script>

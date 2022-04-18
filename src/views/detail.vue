@@ -169,7 +169,6 @@ export default {
                 category = item.category
             }
         })
-        // category = this.capitalize(category);
         return category;
       },
 
