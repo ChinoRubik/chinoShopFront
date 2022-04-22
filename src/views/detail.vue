@@ -139,7 +139,7 @@ export default {
           } else {
             this.product = res.data.rows[0]
             this.getImages(this.product.uuid)
-            this.sizesAvaible = this.product.size.split(',')
+            this.sizesAvaible = this.getSizesAvaible(this.product)
           }
           this.totalStock = this.theresStock();
         });
@@ -349,8 +349,24 @@ export default {
             }
           });
         }
-      }
+      },
 
+      getSizesAvaible(item) {
+        const sizes = []
+        const my_split = item.stock.split('},')
+          for(var i = 0; i<my_split.length; i++) {
+              if(my_split.length > 1 && i !== my_split.length-1 ) {
+                if(parseInt(JSON.parse(my_split[i]+'}').stock) !== 0) {
+                  sizes.push(JSON.parse(my_split[i]+'}').size)
+                }
+              } else {
+                if(parseInt(JSON.parse(my_split[i]).stock) !== 0) {
+                  sizes.push(JSON.parse(my_split[i]).size)
+                }
+              }
+          }
+        return sizes
+      }
       // capitalize(word) {
       //   console.log(word)
       //   return word[0].toUpperCase() + word.slice(1).toLowerCase();

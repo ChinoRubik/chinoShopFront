@@ -28,7 +28,7 @@ export default new Vuex.Store({
   },
   actions: {
 
-      // login({commit}, user) {
+    // login({commit}, user) {
     //   axios.post(config.api_route+'auth/login',
     //     user , {
     //       headers: {'Content-Type': 'application/json'}
@@ -50,30 +50,30 @@ export default new Vuex.Store({
     //   })
     // },
 
-    register({commit}, user) {
-      const userLog= {
-        email : user.email,
-        password : user.password  
+    register({ commit }, user) {
+      const userLog = {
+        email: user.email,
+        password: user.password
       }
-      axios.post(config.api_route+'auth/register',
-        user , {
-          headers: {'Content-Type': 'application/json'}
-        }
+      axios.post(config.api_route + 'auth/register',
+        user, {
+        headers: { 'Content-Type': 'application/json' }
+      }
       ).then(() => {
-        
-        axios.post(config.api_route+'auth/login',
-        userLog , {
-          headers: {'Content-Type': 'application/json'}
+
+        axios.post(config.api_route + 'auth/login',
+          userLog, {
+          headers: { 'Content-Type': 'application/json' }
         }
-      ).then((res) => {
-        if(res.status === 200) {
-          commit('setToken', res.data.data.token)
-          localStorage.setItem('token', res.data.data.token)
-          router.push({name:'Home'})
-        }
-      }).catch((err) => {
-        console.log(err.response)
-      })
+        ).then((res) => {
+          if (res.status === 200) {
+            commit('setToken', res.data.data.token)
+            localStorage.setItem('token', res.data.data.token)
+            router.push({ name: 'Home' })
+          }
+        }).catch((err) => {
+          console.log(err.response)
+        })
 
 
       }).catch((err) => {
@@ -81,37 +81,37 @@ export default new Vuex.Store({
       })
     },
 
-    readToken({commit}) {
-      if(localStorage.getItem('token')) {
+    readToken({ commit }) {
+      if (localStorage.getItem('token')) {
         commit('setToken', localStorage.getItem('token'))
-      }else{
+      } else {
         commit('setToken', null)
       }
     },
-    
-    logout({commit}) {
+
+    logout({ commit }) {
       localStorage.removeItem('token');
       commit('setToken', null);
       commit('setRoll', null);
       commit('setTotalAmount', 0);
-      router.push({name:'Login'}).catch((err)=>{ console.log(err)});
+      router.push({ name: 'Login' }).catch((err) => { console.log(err) });
     },
 
-    settingRoll({commit}, data) {
+    settingRoll({ commit }, data) {
       commit('setRoll', data)
     },
 
-    settingToken({commit}, data) {
+    settingToken({ commit }, data) {
       commit('setToken', data)
     },
 
-    settingTotalAmount({commit}, data) {
+    settingTotalAmount({ commit }, data) {
       commit('setTotalAmount', data)
     }
   },
   modules: {
   },
-  
+
   plugins: [createPersistedState()]
 
 })

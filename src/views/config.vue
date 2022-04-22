@@ -37,7 +37,7 @@
           class="my-5 w-100"
           type="password"
         /> -->
-        <vs-button type="submit" gradient>Guardar</vs-button>
+        <vs-button gradient >Guardar</vs-button>
       </form>
     </div>
   </div>
@@ -45,23 +45,54 @@
 
 <script>
 import authService from '../services/auth';
+import userServices from '../services/userServices'
 
 export default {
   data() {
     return {
       user: {
+        uuid: '',
         name: "",
         lastname: "",
         email: "",
-        password: "",
       },
     };
   },
 
   created() {
       authService.dashboard().then((res) => {
-          this.user = res.data.data.user
+          this.user.uuid = res.data.data.user.uuid
+          this.user.name = res.data.data.user.name
+          this.user.lastname = res.data.data.user.lastname
+          this.user.email = res.data.data.user.email
       })
+  },
+
+  methods: {
+    submitted() {
+      const loading = this.$vs.loading()
+      userServices.updateUser(this.user, this.user.uuid).then((res) => {
+        if (res.status === 200) {
+          this.$vs.notification({
+            color: 'success',
+            position: 'buttom-right',
+            title:'Los datos han sido actualizados',
+            text: 'Los cambios se reflejarerán en el proximo inicio de sesión',
+            duration: 7000
+          })
+          loading.close();
+        }
+      })
+    }
   }
 };
 </script>
+<style>
+.vs-notification__content__text p{
+  font-size: 17px;
+}
+.vs-notification__content__header h4{
+  font-size: 17px;
+  font-weight: bold;
+}
+</style>
