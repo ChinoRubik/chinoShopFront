@@ -8,6 +8,7 @@ import 'vue-select/dist/vue-select.css';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
+import './index.css'
 
 
 Vue.use(BootstrapVue)

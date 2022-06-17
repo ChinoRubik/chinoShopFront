@@ -14,10 +14,9 @@
     </div> -->
 
     <div class="w-100  mt-10">
-      <h1 class="text-3xl mb-2">Productos
-</h1>
+      <h1 class="text-3xl mb-3">Productos</h1>
       <div class="flex justify-evenly flex-wrap">
-        <div v-for="item, index in products" :key="item.uuid" class="mb-8 col-12 col-lg-4">
+        <div v-for="item, index in products" :key="item.uuid" class="mb-8 col-12 col-md-6 col-lg-4">
           <div class="text-center" :ref="`spinner${index}`">
             <b-spinner variant="primary" class="mt-5"></b-spinner>
           </div>

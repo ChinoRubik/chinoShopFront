@@ -1,5 +1,5 @@
 <template>
-  <div class="w-2/3 container mx-auto mt-32 mb-5">
+  <div class="col-12 container mx-auto mt-32 mb-5">
     <div class="">  
         <h1 class="text-3xl font-bold text-center">Tu Carrito</h1>
         <div v-if="totalAmount === 0" class="text-xl mt-5 text-gray-500">
@@ -8,8 +8,8 @@
 
         <div v-else class="mt-5">
           <vs-card type="3" v-for="item in cartUpdated" :key="item.uuid" class="mb-5">
-            <template #img >
-                <img :src="item.image" alt="image" >
+            <template #img>
+                <img :src="item.image" alt="image">
             </template>
             <template #interactions>
               <vs-button danger icon @click="toggleFavorite(item.product_uuid, userData.uuid)" :key="changed">

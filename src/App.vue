@@ -8,32 +8,25 @@
           center-collapsed
           v-model="activeNav"
           v-if="($route.path.split('/')[1] !== 'pagoInformacion') &&  ($route.path.split('/')[1] !== 'envioInformacion') && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')"
+          class="bg-gray-200"
         >
           <template #left>
-            <h1>ChinoShop</h1>
+            <router-link :to="{name: 'Home'}" class="hover:no-underline">
+
+              <h1 class="text-4xl ml-3">ChinoShop</h1>
+            </router-link>
           </template>
-          <!-- <vs-navbar-item :active="activeNav == 'home'" id="home"> -->
-            <!-- <router-link :to="{name: 'Home'}" class="mx-5">Home</router-link> -->
-            <router-link :to="{name: 'Home'}" custom v-slot="{ navigate }">
-              <i class="fa fa-home mr-2 text-2xl"></i>
-              <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer text-xl">Home</span>
+
+          <router-link :to="{name: 'Home'}" class="">
+            <i class="fa fa-home mr-2 text-2xl"></i>
+            <span  role="link" class="pr-4 text-xl hover:cursor-pointer">Home</span>
           </router-link>
-          <!-- </vs-navbar-item> -->
-          <!-- <vs-navbar-item :active="activeNav == 'docs'" id="docs">
-            Sudaderas
-          </vs-navbar-item>
-          <vs-navbar-item :active="activeNav == 'components'" id="components">
-            Playeras
-          </vs-navbar-item>
-          <vs-navbar-item :active="activeNav == 'license'" id="license">
-            Chamarras 
-          </vs-navbar-item> -->
-          <!-- <vs-navbar-item :active="activeNav == 'administrador'" id="administrador"  v-if="roll === 'admin'"> -->
-          <!-- <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" > Administrador</router-link> -->
-          <router-link :to="{name: 'Administrador'}" custom v-slot="{ navigate }" v-if="roll === 'admin'" class="mt-1" >
-             <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer">Administrador</span>
+
+          <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" class="mt-1" >
+            <span role="link" class="pr-4 hover:cursor-pointer">Administrador</span>
           </router-link>
-          <template #right class="">
+
+          <template #right>
             <div class="">
               <a href="/carrito"> 
                   <span class="bg-black font-bold text-white spanNumber rounded text-sm" >{{totalAmount}}</span>
@@ -47,7 +40,7 @@
                   <i class="fas fa-bars text-3xl text-gray-700"></i>
                 </template>
                 <b-dropdown-item :to="{name: 'Configuracion'}" v-if="token">
-                 <i class="fas fa-user text-lg mr-2 text-gray-500"></i>
+                <i class="fas fa-user text-lg mr-2 text-gray-500"></i>
                   Configuración
                   </b-dropdown-item>
                 <b-dropdown-item :to="{name: 'Favoritos'}" v-if="token">
@@ -55,7 +48,7 @@
                   Favoritos
                 </b-dropdown-item>
                 <b-dropdown-item @click="logout" v-if="token">
-                 <i class="fa fa-sign-out text-lg mr-2 text-gray-500"></i>
+                <i class="fa fa-sign-out text-lg mr-2 text-gray-500"></i>
                   Log out
                 </b-dropdown-item>
                 <b-dropdown-item  @click="redirect" v-if="!token">
@@ -66,7 +59,6 @@
             </div>
           </template>
         </vs-navbar>
-      
         <div id="padding-scroll-content" class="square"></div>
       </div>
 

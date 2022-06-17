@@ -1,12 +1,12 @@
 <template>
-  <div class="w-2/3 container mx-auto mt-32 ">
-    <div class="flex" v-if="loaded">  
-        <div class="w-2/6">
-            <carousel class="carousel " :perPage="1" >
+  <div class="col-12 col-lg-10 mx-auto mt-32 ">
+    <div class="flex flex-wrap" v-if="loaded">  
+        <div class="col-12 col-md-5 col-lg-4">
+            <carousel class="carousel mx-auto" :perPage="1" >
             <slide v-for="item in images" :key="item"> <img :src="item" class="slide rounded-xl shadow-xl mx-5 mb-10" /></slide>
             </carousel>
         </div>
-        <div class="bg-white w-4/6 px-10 py-2 rounded-xl shadow-lg">
+        <div class="bg-white col-12 col-md-7 col-lg-8 px-10 py-2 rounded-xl shadow-lg">
             <div :key="changed">
               <i class="far fa-heart text-2xl text-blue-500 cursor-pointer float-right ml-3" v-if="!product.isFavorite" @click="toggleFavorite(product.uuid, userData.uuid)"></i>
               <i class="fas fa-heart text-2xl text-blue-500 cursor-pointer float-right ml-3 hover:text-blue-600" v-if="product.isFavorite" @click="toggleFavorite(product.uuid, userData.uuid)"></i>
