@@ -1,65 +1,65 @@
 <template>
 
-  <div class="flex  flex-wrap container">
-            <div class="col-7">
-              <div class="px-3">
-                  <Breadcrumb :activeArray="activeArray" :key="hasChanged"></Breadcrumb>
-                  <h4 class="">Información de contacto</h4>
+  <div class="flex flex-wrap container container-buy mt-4">
+    <div class="col-12 col-md-7">
+      <div class="px-3">
+            <Breadcrumb :activeArray="activeArray" :key="hasChanged"></Breadcrumb>
+            <h4 class="mb-2">Información de contacto</h4>
 
-                  <label class="text-left block mb-1">Correo electrónico: </label>
-                <b-form-input v-model="user.email" disabled placeholder="Correo electrónico" class="mb-3"></b-form-input>
-                
-                <div class="flex justify-between">
-                  <div>
-                      <label class="text-left block mb-1">Nombre: </label>
-                      <b-form-input v-model="user.name" placeholder="Nombre" class="mb-3" disabled></b-form-input>
-                  </div>
-
-                  <div>
-                    <label class="text-left block mb-1">Apellido: </label>
-                    <b-form-input v-model="user.lastname" placeholder="Apellido" class="mb-3" disabled></b-form-input>
-                  </div>
-                </div>
-                
-                <h4 class="">Dirección de envío</h4>
-
-                <label class="text-left block mb-1">País: </label>
-                  <b-form-select v-model="countrySelected" :options="optionsCountry" class="mb-3"></b-form-select>
-
-                <label class="text-left block mb-1">Calle: </label>
-                <b-form-input v-model="adddess.street" placeholder="Calle" class="mb-3"></b-form-input>
-
-                  <label class="text-left block mb-1">Número Exterior y Número Interior: </label>
-                <b-form-input v-model="adddess.number" placeholder="Número Exterior y Número Interior" class="mb-3"></b-form-input>
-
-                <label class="text-left block mb-1">Colonia: </label>
-                <b-form-input v-model="adddess.colony" placeholder="Colonia" class="mb-3"></b-form-input>
-
-                  <div class="flex justify-between">
-                    <div class="col-4">
-                        <label class="text-left block mb-1">Código postal: </label>
-                        <b-form-input v-model="adddess.cp" placeholder="Código postal" class="mb-3" type="number"></b-form-input>
-                    </div>
-
-                    <div class="col-4">
-                      <label class="text-left block mb-1">Ciudad: </label>
-                      <b-form-input v-model="adddess.city" placeholder="Ciudad" class="mb-3"></b-form-input>
-                    </div>
-
-                    <div class="col-4">
-                      <label class="text-left block mb-1">Estado: </label>
-                      <b-form-select v-model="adddess.state" :options="optionsState" class="mb-3"></b-form-select>
-                    </div>
-                </div>
-                  <label class="text-left block mb-1 ">Teléfono: </label>
-                  <b-form-input v-model="adddess.phone" placeholder="Teléfono" class="mb-3" type="number"></b-form-input>
-
-                    <b-button variant="outline-primary mb-5 block float-left" @click="submitted">Continuar a envíos</b-button>
-
-              </div>
+            <label class="text-left block mb-1">Correo electrónico: </label>
+          <b-form-input v-model="user.email" disabled placeholder="Correo electrónico" class="mb-3"></b-form-input>
+          
+          <div class="flex justify-between">
+            <div>
+                <label class="text-left block mb-1">Nombre: </label>
+                <b-form-input v-model="user.name" placeholder="Nombre" class="mb-3" disabled></b-form-input>
             </div>
-            <SideCart class="bg-gray-100 col-5 p-5"></SideCart>
-        </div>
+
+            <div>
+              <label class="text-left block mb-1">Apellido: </label>
+              <b-form-input v-model="user.lastname" placeholder="Apellido" class="mb-3" disabled></b-form-input>
+            </div>
+          </div>
+          
+          <h4 class="">Dirección de envío</h4>
+
+          <label class="text-left block mb-1">País: </label>
+            <b-form-select v-model="countrySelected" :options="optionsCountry" class="mb-3"></b-form-select>
+
+          <label class="text-left block mb-1">Calle: </label>
+          <b-form-input v-model="adddess.street" placeholder="Calle" class="mb-3"></b-form-input>
+
+            <label class="text-left block mb-1">Número Exterior y Número Interior: </label>
+          <b-form-input v-model="adddess.number" placeholder="Número Exterior y Número Interior" class="mb-3"></b-form-input>
+
+          <label class="text-left block mb-1">Colonia: </label>
+          <b-form-input v-model="adddess.colony" placeholder="Colonia" class="mb-3"></b-form-input>
+
+            <div class="flex justify-between flex-wrap">
+              <div class="col-12 col-lg-3 p-0 mr-1">
+                  <label class="text-left block mb-1">Código postal: </label>
+                  <b-form-input v-model="adddess.cp" placeholder="Código postal" class="mb-3" type="number"></b-form-input>
+              </div>
+
+              <div class="col-12 col-lg-4 p-0 mr-1">
+                <label class="text-left block mb-1">Ciudad: </label>
+                <b-form-input v-model="adddess.city" placeholder="Ciudad" class="mb-3"></b-form-input>
+              </div>
+
+              <div class="col-12 col-lg-4 p-0">
+                <label class="text-left block mb-1">Estado: </label>
+                <b-form-select v-model="adddess.state" :options="optionsState" class="mb-3"></b-form-select>
+              </div>
+          </div>
+            <label class="text-left block mb-1 ">Teléfono: </label>
+            <b-form-input v-model="adddess.phone" placeholder="Teléfono" class="mb-3" type="number"></b-form-input>
+
+              <b-button variant="outline-primary mb-5 block float-left" @click="submitted">Continuar a envíos</b-button>
+
+      </div>
+    </div>
+    <SideCart class="bg-gray-100 col-12 col-md-5 p-5 mb-3"></SideCart>
+  </div>
 </template>
 
 <script>
@@ -309,6 +309,11 @@ export default {
   float: left;
   margin-right: -10px;
   z-index: 5;
+}
+@media(max-width: 768px){
+  .container-buy {
+    flex-direction:column-reverse;
+  }
 }
 </style>
 

@@ -17,13 +17,13 @@
             </router-link>
           </template>
 
-          <router-link :to="{name: 'Home'}" class="">
+          <router-link :to="{name: 'Home'}">
             <i class="fa fa-home mr-2 text-2xl"></i>
             <span  role="link" class="pr-4 text-xl hover:cursor-pointer">Home</span>
           </router-link>
 
           <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" class="mt-1" >
-            <span role="link" class="pr-4 hover:cursor-pointer">Administrador</span>
+            <span role="link" class="pr-4 text-xl hover:cursor-pointer">Administrador</span>
           </router-link>
 
           <template #right>
@@ -68,7 +68,7 @@
           <router-view/>  
     </div>
 
-    <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')" >
+    <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'envioInformacion' && $route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')" >
       <div class="flex justify-between flex-wrap container mx-auto py-5">
         <div>
           <h4 class="mb-4">Redes sociales</h4>

@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-wrap container">
-    <div class="col-7">
+  <div class="flex flex-wrap container container-buy mt-4 mb-3">
+    <div class="col-12 col-md-7">
       <Breadcrumb :activeArray="activeArray"></Breadcrumb>
       <div class="px-3">
-        <h4 class="">Pagos</h4>
+        <h4 class="mb-2">Pagos</h4>
         
         <b-list-group>
      
@@ -30,7 +30,7 @@
         >
       </div>
     </div>
-    <SideCart class="bg-gray-100 col-5 p-5" v-on:getTotalFromSide="getTotal" v-on:getProductsFromSide="getProducts"></SideCart>
+    <SideCart class="bg-gray-100 col-12 col-md-5 p-5 mb-2" v-on:getTotalFromSide="getTotal" v-on:getProductsFromSide="getProducts"></SideCart>
   </div>
 </template>
 
@@ -245,15 +245,6 @@ export default {
   padding: 15px;
   cursor: pointer;
 }
-input[type="radio"]{
-  /* display: block; */
-  /* top: 25px !important */
-  /* padding: 15px; */
-  /* margin-top: 5rem !important; */
-}
-.custom-radio {
-  /* top: 10px !important */
-}
 .custom-control-label::before{
   display: block;
   top: 1rem !important;
@@ -264,5 +255,10 @@ input[type="radio"]{
 .backGroundBlue {
   background-color: #007bff !important; 
   color: white !important
+}
+@media(max-width: 768px){
+  .container-buy {
+    flex-direction:column-reverse;
+  }
 }
 </style>

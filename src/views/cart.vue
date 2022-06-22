@@ -7,7 +7,7 @@
         </div>
 
         <div v-else class="mt-5">
-          <vs-card type="3" v-for="item in cartUpdated" :key="item.uuid" class="mb-5">
+          <vs-card type="3" v-for="item in cartUpdated" :key="item.uuid" class="mb-5 card-cart">
             <template #img>
                 <img :src="item.image" alt="image">
             </template>
@@ -22,23 +22,22 @@
             </template>
  
             <template #text>
-                <div class="flex justify-between mt-10">
-                  <div>
+                <div class="flex justify-between mt-10 flex-wrap">
+                  <div class="col-12 col-md-6 col-lg">
                     <span class="leading-10">Talla:</span>
                     <v-select v-model="item.size" :options="getSizesAvaible(item)" />
                   </div>
-                   <div class="flex ">
+                   <div class="col-12 col-md-5 col-lg ml-md-3 mt-3 mt-md-0">
                         <p class="leading-10">Cantidad:</p>
-                        <vs-input v-model="item.amount" type="number" class="ml-4 inputNumber" min="1"/>
+                        <vs-input v-model="item.amount" type="number" class="inputNumber block" min="1"/>
                    </div>
-                    <div v-if="item.discount !== 0" class="flex flex-wrap mb-4"> 
-                      <span class="w-100">Precio: </span>
+                    <div v-if="item.discount !== 0" class="mb-4 col-12 mt-3 col-lg"> 
+                      <span class="w-100 block mb-1 text-center">Precio: </span>
                       <div><strong class="text-left"> <del>${{item.price}}.00 MXM</del></strong><span class="ml-2" v-if="item.discount !== 0">${{ item.price - (item.price / 100) * item.discount}}.00 MXM</span></div>
                     </div>
-                    <span v-else >Precio: <strong class="block w-100 text-left mb-4"> ${{item.price}} MXM</strong></span>
-                   <!-- <p class="leading-10">Precio: $ <span class="font-bold">{{item.price * item.amount}} MXM</span></p> -->
-                   
-                    <vs-button danger flat @click="activeModalMethod(item)" class="buttonDelete">Quitar del carrito</vs-button>
+                    <span v-else class="block mb-4 col-12 mt-3 col-lg text-center mb-4">Precio: <strong> ${{item.price}} MXM</strong></span>
+
+                    <vs-button danger flat @click="activeModalMethod(item)" class="buttonDelete col-12 col-lg">Quitar del carrito</vs-button>
 
                 </div>
             </template>
@@ -109,7 +108,6 @@ export default {
   created() {
     const loading = this.$vs.loading()
     if(this.token === null) {
-      console.log('no logueado')
       adminProducts.getProducts().then((res) => {
         res.data.rows.map((item) => {
           this.products.push(item)
@@ -317,7 +315,6 @@ export default {
             res.data.rows.map((item) => {
               if(item.isDone === 0) {
                 isIncompleteSale = true
-                console.log('impossibbble')
               }
             });
 
@@ -461,22 +458,6 @@ export default {
       return sizes
     }
   }
-
-  // watch: {
-  //   cartUpdated: {
-  //     handler: function (val) {
-  //       console.log('a thing changed' , val, 'this is old', this.loadedPage)
-
-  //       if (val === this.loadedPage) {
-  //         console.log('somos iguales')
-  //       } else {
-  //         console.log('no somos iguales')
-  //       }
-  //       this.loadedPage = Object.values(val)
-  //     },
-  //     deep: true
-  //   }
-
 }
 </script>
 
@@ -493,6 +474,51 @@ export default {
 .vs-card__text{
     width: 70%;
 }
+
+@media(max-width:576px) {
+  .vs-card__img {
+      width: 100%;
+  }
+
+  .vs-card__text{
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+  }
+}
+
+@media(min-width: 576px) {
+  .vs-card__img {
+      width: 70%;
+      margin: 0 auto;
+  }
+
+  .vs-card__text{
+      width: 100%;
+  }
+}
+
+@media(min-width: 992px) {
+  .vs-card__img {
+      width: 30%;
+  }
+
+  .vs-card__text{
+      width: 70%;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 .inputNumber{
     width: 30%;
@@ -513,4 +539,11 @@ export default {
   font-size: 17px;
   font-weight: bold;
 }
+.card-cart img {
+  width: 100%;
+}
+.vs-card {
+  display: flex !important;
+  flex-wrap: wrap !important;
+} 
 </style>

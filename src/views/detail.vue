@@ -119,7 +119,7 @@ export default {
     this.getProduct();
 
     if(this.token === null) {
-      console.log('no logueado')
+      console.log()
     } else {
       serviceAuth.dashboard().then(res => {
       this.userData = res.data.data.user;
@@ -225,16 +225,6 @@ export default {
                     }
                   })
                 }
-          // } else {
-          //   this.$vs.notification({
-          //       icon: `<i class="fas fa-exclamation-circle"></i>`,
-          //       color: 'danger',
-          //       position: 'top-right',
-          //       title: 'Ups!',
-          //       text: `No hay suficiente stock`,
-          //   })
-          // }
-      
         }
       },
 
@@ -367,10 +357,6 @@ export default {
           }
         return sizes
       }
-      // capitalize(word) {
-      //   console.log(word)
-      //   return word[0].toUpperCase() + word.slice(1).toLowerCase();
-      // },
   },
 
   watch: {

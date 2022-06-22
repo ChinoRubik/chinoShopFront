@@ -14,7 +14,7 @@
     </div> -->
 
     <div class="w-100  mt-10">
-      <h1 class="text-3xl mb-3">Productos jaja</h1>
+      <h1 class="text-3xl mb-3">Productos</h1>
       <div class="flex justify-evenly flex-wrap">
         <div v-for="item, index in products" :key="item.uuid" class="mb-8 col-12 col-md-6 col-lg-4">
           <div class="text-center" :ref="`spinner${index}`">
@@ -125,14 +125,12 @@ export default {
       let stock = 0;
       const my_split = product.stock.split('},')
       for(var i = 0; i<my_split.length; i++) {
-        // console.log(my_split[i])
           if(my_split.length > 1 && i !== my_split.length-1 ) {
               stock += parseInt(JSON.parse(my_split[i]+'}').stock);
           } else{
               stock += parseInt(JSON.parse(my_split[i]).stock);
           }
       }
-      // console.log(stock, 'no hay stock')
       return(stock)
     },
 
@@ -317,18 +315,8 @@ export default {
 
 <style>
 .vs-sidebar-content, .open {
-  /* position: absolute; */
-  /* height: auto; */
-  /* top: 80px; */
-  display: block;
-  /* z-index: 0; */
-}
 
-.vs-sidebar {
-  /* height: 200px; */
-}
-.vs-card-content{
-  /* width: 100%; */
+  display: block;
 }
 
 .vs-card, .vs-card-content.type-2 .vs-card__text{

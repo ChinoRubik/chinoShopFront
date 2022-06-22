@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-wrap container">
-    <div class="col-7">
+  <div class="flex flex-wrap container container-buy mt-4">
+    <div class="col-12 col-md-7">
       <Breadcrumb :activeArray="activeArray" :key="hasChanged"></Breadcrumb>
       <div class="px-3">
-        <h4 class="">Envios</h4>
+        <h4 class="mb-2">Envios</h4>
 
         <div>
           <div class="flex flex-wrap">
-            <div class="p-4 border w-100 flex justify-between"><span class="text-gray-400 font-bold">Contacto</span> <span>{{user.email}}</span>  
+            <div class="p-4 border w-100 flex justify-between flex-wrap"><span class="col-12 text-gray-400 font-bold">Contacto</span> <span>{{user.email}}</span>  
               <router-link :to="{name: 'Configuracion'}" custom v-slot="{ navigate }">
-                <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer text-blue-400 hover:underline">Cambiar</span>
+                <span @click="navigate" @keypress.enter="navigate" role="link" class="block pr-4 hover:cursor-pointer text-blue-400 hover:underline">Cambiar</span>
               </router-link>
             </div> 
-            <div class="p-4 border w-100 flex justify-between"><span class="text-gray-400 font-bold">Enviar a</span> <span class="px-3">{{address.street}}, {{address.number}}, {{address.colony}}
+            <div class="p-4 border w-100 flex justify-between flex-wrap"><span class="col-12 text-gray-400 font-bold">Enviar a</span> <span class="px-3">{{address.street}}, {{address.number}}, {{address.colony}}
               , {{address.cp}} {{address.city}}, {{address.state}} {{address.country}}</span>  
               <router-link  :to="{name: 'Checkout', params: { uuid: this.$route.params.uuid}}" custom v-slot="{ navigate }">
                 <span @click="navigate" @keypress.enter="navigate" role="link" class="pr-4 hover:cursor-pointer text-blue-400 hover:underline">Cambiar</span>
@@ -25,7 +25,7 @@
         >
       </div>
     </div>
-    <SideCart class="bg-gray-100 col-5 p-5"></SideCart>
+    <SideCart class="bg-gray-100 col-12 col-md-5 p-5 mb-2"></SideCart>
   </div>
 </template>
 
@@ -109,4 +109,10 @@ export default {
   },
 };
 </script>
-
+<style>
+@media(max-width: 768px){
+  .container-buy {
+    flex-direction:column-reverse;
+  }
+}
+</style>

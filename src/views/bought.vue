@@ -12,9 +12,9 @@
         </div>
         <div class="backgroundMain">
             <div class="w-1/3 mx-auto boxes">
-                <div v-for="item in productsBought" :key="item.uuid" class="bg-white rounded-xl p-3 flex mb-4 box">
-                    <img :src="item.image" class="rounded-full img">
-                    <div class="ml-4">
+                <div v-for="item in productsBought" :key="item.uuid" class="bg-white rounded-xl p-3 flex mb-4 box flex-wrap justify-center">
+                    <img :src="item.image" class="rounded-full img mb-2">
+                    <div class="md:ml-4">
                         <span class="font-bold text-left block">({{item.amount}}) {{item.name}}</span>
                         <span class="text-stone-500 text-left mt-2 block ">{{item.description}}</span>
                         <span class="text-stone-500 text-left block">Talla <strong>{{item.size}}</strong></span>

@@ -42,7 +42,7 @@ export default {
           if (this.repeat_password == this.user.password) {
               this.register(this.user)
           } else {
-              console.log('La contraseña no coincide')
+              console.log()
           }
       }
   }
