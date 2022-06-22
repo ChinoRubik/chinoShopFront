@@ -70,14 +70,14 @@
 
     <footer class="footer mt-5" v-if="$route.path.split('/')[1] !== 'envioInformacion' && $route.path.split('/')[1] !== 'pagoInformacion' && ($route.path.split('/')[1] !== 'pago') && ($route.path.split('/')[1] !== 'compra-exitosa')" >
       <div class="flex justify-between flex-wrap container mx-auto py-5">
-        <div>
-          <h4 class="mb-4">Redes sociales</h4>
-            <a href="" class="aSocial"><i class="aSocialIcon fab fa-facebook-square text-3xl"></i></a>
-            <a href="" class="aSocial"><i class="aSocialIcon fab fa-instagram-square text-3xl ml-3"></i> </a>
-          </div>        
-        <div>
-          <h4 class="mb-4">Politicas</h4>
-          <ul class="text-left">
+        <div class="col-12 col-md-4 pb-4">
+          <h4 class="mb-4 text-2xl">Redes sociales</h4>
+            <a href="https://www.facebook.com/nomarDev/" target="_blank" class="aSocial"><i class="aSocialIcon fab fa-facebook-square text-3xl"></i></a>
+            <a href="https://www.instagram.com/naitsirc_nomar/" target="_blank" class="aSocial"><i class="aSocialIcon fab fa-instagram-square text-3xl ml-3"></i> </a>
+        </div>        
+        <div class="col-12 col-md-4 py-4 py-md-0">
+          <h4 class="mb-4 text-2xl">Politicas</h4>
+          <ul class="text-center">
             <li class="my-2">
               <a href=""  class="aSocial">Términos y condiciones</a>
             </li>
@@ -90,8 +90,8 @@
           </ul>
         </div>
 
-        <div>
-          <h4 class="mb-4">Newsletter</h4>
+        <div class="col-12 col-md-4 py-4 py-md-0">
+          <h4 class="mb-4 text-2xl">Newsletter</h4>
           <p v-if="!token"> ¿Aún no te has registrado?</p>
           <vs-button  flat @click="redirect" class=" " v-if="!token">Sign in</vs-button>
           <p v-else>Bienvenido <strong></strong></p>
@@ -166,7 +166,7 @@ body {
 }
 
 .footer{
-  height: 300px;
+  height: auto;
   color: #444;
   background-color: rgb(233, 233, 233);
 }
@@ -188,5 +188,6 @@ body {
 .routerView {
   min-height: 650px !important;
 }
+
 
 </style>
