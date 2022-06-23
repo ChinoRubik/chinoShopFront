@@ -5,8 +5,15 @@ import store from '../store/index'
 export default {
     getCategories() {
         return axios.get(`${config.api_route}dashboard/public/getcategories`,
-        {headers: { 'auth-token' : store.state.token ,
-        'Content-Type': 'application/json'}}
+        ).then((res) => {
+            return res
+        }).catch((error) => {
+            return error.response
+        });
+    },
+
+    getProductsByCategory(category_uuid) {
+        return axios.get(`${config.api_route}dashboard/public/getProductsByCategory/${category_uuid}`,
         ).then((res) => {
             return res
         }).catch((error) => {

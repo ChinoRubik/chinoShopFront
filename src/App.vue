@@ -22,9 +22,20 @@
             <span  role="link" class="pr-4 text-xl hover:cursor-pointer">Home</span>
           </router-link>
 
-          <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" class="mt-1" >
-            <span role="link" class="pr-4 text-xl hover:cursor-pointer">Administrador</span>
+        <b-dropdown variant="outline" class="my-dropdown mt-2 mr-4">
+          <template #button-content>
+            <span class="text-xl color-drop hover:underline hover:text-blue-600">Categorías</span>
+          </template>
+          <b-dropdown-item :to="{name: 'category', params: {category: item.category}}" v-for="(item, index) in categories" :key="index">
+            {{capitalize(item.category)}}
+          </b-dropdown-item>
+        </b-dropdown>
+
+          <router-link :to="{name: 'Administrador'}" v-if="roll === 'admin'" class="mt-2 block-round">
+            <span role="link" class="text-xl hover:cursor-pointer">Administrador</span>
           </router-link>
+
+
 
           <template #right>
             <div class="">
@@ -104,11 +115,13 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import service from './services/adminProducts';
 
 export default {
   data() {
     return {
       activeNav: "home",
+      categories: []
     };
   },
   computed: {
@@ -122,10 +135,20 @@ export default {
       if(this.$route.path !== '/login') {
         this.$router.push({name:'Login'})
       }
-    }
+    },
+
+    getCategories() {
+      service.getCategories().then((response) => {
+        this.categories = response.data.rows
+      })
+    },
+    capitalize(word) {
+      return word[0].toUpperCase() + word.slice(1).toLowerCase();
+    },
   },
   created() {
     this.readToken();
+    this.getCategories()
   },
 };
 </script>
@@ -187,6 +210,16 @@ body {
 
 .routerView {
   min-height: 650px !important;
+}
+.color-drop {
+  color: #2C3E50;
+}
+.block-round {
+  display: block;
+  text-align: center;
+  border: 2px solid #444;
+  padding: 0.5em;
+  border-radius: 1em;
 }
 
 
