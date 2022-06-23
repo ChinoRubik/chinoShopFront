@@ -15,7 +15,8 @@
 
     <div class="w-100  mt-10">
       <h1 class="text-3xl mb-3">Productos</h1>
-      <div class="flex justify-evenly flex-wrap">
+      <div v-if="products.length === 0">No hay productos disponibles por el momentos</div>
+      <div class="flex justify-evenly flex-wrap" v-else>
         <div v-for="item, index in products" :key="item.uuid" class="mb-8 col-12 col-md-6 col-lg-4">
           <div class="text-center" :ref="`spinner${index}`">
             <b-spinner variant="primary" class="mt-5"></b-spinner>
@@ -26,9 +27,7 @@
                 <h3 class="font-bold">{{item.name}}</h3>
               </template>
               <template #img class="w-100">
-
-                  <a :href="`detalle/${item.uuid}`"> <img :src="item.image" alt="image" @load="onLoaded(index, `cartButton${item.uuid}`)"></a>
-
+                  <router-link :to="{name: 'Detalle', params: {uuid: item.uuid}}"> <img :src="item.image" alt="image" @load="onLoaded(index, `cartButton${item.uuid}`)"></router-link>
               </template>
               <template #text>
                   <div v-if="item.discount !== 0 && theresStock(item) !== 0" class="flex flex-wrap mb-4"> 
@@ -83,7 +82,8 @@ export default {
       products: [],
       userData: {},
       totalStock: 0,
-      changed: false
+      changed: false,
+      categories: []
     }
   },
 
@@ -92,14 +92,9 @@ export default {
   },
 
   created() {
-    adminProducts.getProducts().then((res) => {
-      res.data.rows.map((item) => {
-        adminProducts.getImages(item.uuid).then((res) => {
-          item.image = res.data.rows[0].url;
-        });
-        this.products.push(item)
-      });
-    });
+    this.getProducts();
+
+    this.getCategories();
 
     if(this.token === null) {
       
@@ -113,9 +108,9 @@ export default {
         this.addToCartPrevent();
         this.getCart();
         this.getFavorites();
+
       });
     }
-    
   },
 
   methods: {
@@ -307,6 +302,46 @@ export default {
             adminProducts.addToFavorites(obj).then(() => {})
           }
         });
+      }
+    },
+
+    isCategory(param) {      
+      this.products = []
+      adminProducts.getProductsByCategory(this.categories.filter((item) => item.category === param)[0].uuid).then((res) => {
+        res.data.rows.map((item) => {
+          adminProducts.getImages(item.uuid).then((res) => {
+            item.image = res.data.rows[0].url;
+          });
+          this.products.push(item)
+        })
+      })
+    },
+
+    getCategories() {
+      adminProducts.getCategories().then((res) => {
+        this.categories = res.data.rows
+      })
+    },
+
+    getProducts() {
+      adminProducts.getProducts().then((res) => {
+        res.data.rows.map((item) => {
+          adminProducts.getImages(item.uuid).then((res) => {
+            item.image = res.data.rows[0].url;
+          });
+          this.products.push(item)
+        });
+    });
+    }
+  }, 
+
+  watch: {
+    $route(new_value) {
+      if (new_value.params.category !== undefined) {
+        this.isCategory(new_value.params.category)
+      } else {
+        this.products = []
+        this.getProducts() 
       }
     }
   }
