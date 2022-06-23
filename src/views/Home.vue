@@ -1,21 +1,10 @@
 <template>
 
   <div class="container-lg mx-auto p-5 mt-4">
-<!-- 
-    <div class="bg-white rounded-lg w-1/4 m-10">
-      <ul>
-        <li><a href="">Gorras</a></li>
-        <li><a href="">Sudaderas </a></li>
-        <li><a href="">Playeras</a></li>
-        <li><a href="">Chamarras</a></li>
-        <li><a href="">Todos los productos</a></li>
-
-      </ul>
-    </div> -->
 
     <div class="w-100  mt-10">
       <h1 class="text-3xl mb-3">Productos</h1>
-      <div v-if="products.length === 0">No hay productos disponibles por el momentos</div>
+      <div v-if="products.length === 0" class="text-2xl mt-5">No hay productos disponibles por el momento</div>
       <div class="flex justify-evenly flex-wrap" v-else>
         <div v-for="item, index in products" :key="item.uuid" class="mb-8 col-12 col-md-6 col-lg-4">
           <div class="text-center" :ref="`spinner${index}`">

@@ -28,27 +28,6 @@ export default new Vuex.Store({
   },
   actions: {
 
-    // login({commit}, user) {
-    //   axios.post(config.api_route+'auth/login',
-    //     user , {
-    //       headers: {'Content-Type': 'application/json'}
-    //     }
-    //   ).then((res) => {
-    //     if(res.status === 200) {
-    //       commit('setToken', res.data.data.token)
-    //       localStorage.setItem('token', res.data.data.token)
-    //       router.push({name:'Home'})
-    //     }
-    //   }).catch((error) => {
-    //     console.log(error.status, 'undefined')
-    //     // vs.notification({
-    //     //   color: 'danger',
-    //     //   position: 'buttom-right',
-    //     //   title:'Error agregado',
-    //     //   text: 'El producto ha sido agregado al carrito'
-    //     // })
-    //   })
-    // },
 
     register({ commit }, user) {
       const userLog = {
